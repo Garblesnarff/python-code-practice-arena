@@ -1,3 +1,4 @@
+
 import { initPyodide } from './pyodideLoader';
 import type { ExecutionResult, TestResult } from './testTypes';
 
@@ -17,6 +18,7 @@ export const executePythonCode = async (
 import sys
 import traceback
 import inspect
+import json
 
 def run_test(code, test_input):
     try:
@@ -42,6 +44,9 @@ def run_test(code, test_input):
         sig = inspect.signature(function)
         param_count = len(sig.parameters)
         
+        # For debugging
+        print(f"Function: {function_name}, Parameters: {param_count}, Input type: {type(test_input)}")
+        
         # Call the function based on parameter count and input type
         if param_count == 0:
             # Function takes no parameters, ignore any input
@@ -54,13 +59,28 @@ def run_test(code, test_input):
                     raise Exception(f"Function {function_name} expects {param_count} arguments but none were provided")
                 result = function()
             elif param_count == 1:
-                # For single parameter functions, pass the entire list as one argument
+                # Function expects one parameter - pass the list as is if that's what it wants
                 result = function(test_input)
             else:
-                # For multi-parameter functions, unpack the list items as separate arguments
+                # For multi-parameter functions, properly unpack list items
                 if len(test_input) != param_count:
-                    raise Exception(f"Function {function_name} expects {param_count} arguments but got {len(test_input)}")
-                result = function(*test_input)
+                    # First try with the entire list if lengths don't match
+                    try:
+                        result = function(test_input)
+                    except Exception as unpack_err:
+                        raise Exception(f"Function {function_name} expects {param_count} arguments but got {len(test_input)}")
+                else:
+                    # Only unpack if the number of items matches parameter count
+                    try:
+                        # Use Python's apply functionality to unpack arguments
+                        result = function(*test_input)
+                    except TypeError as unpack_error:
+                        # Fallback: try calling with the entire list if unpacking fails
+                        try:
+                            result = function(test_input)
+                        except Exception as secondary_error:
+                            # If both methods fail, raise a clear error
+                            raise Exception(f"Could not call {function_name} with the provided input: {test_input}. Error: {str(secondary_error)}")
         else:
             # Single non-list argument
             if param_count > 1:
@@ -95,6 +115,9 @@ def run_test(code, test_input):
           pyodide.globals.set('expected_output', expectedOutput);
         }
         
+        // Log information about the test case for debugging
+        console.log(`Executing test with input: ${JSON.stringify(inputValue)}`);
+        
         const testResult = runTest(code, inputValue);
         const actualOutput = testResult.get('result');
         const error = testResult.get('error');
@@ -105,6 +128,7 @@ def run_test(code, test_input):
         if (error) {
           actualValue = null;
           isPassing = false;
+          console.log(`Test error: ${error}`);
         } else {
           // Handle JavaScript/Python type conversions
           if (actualOutput === null || actualOutput === undefined) {
@@ -114,6 +138,8 @@ def run_test(code, test_input):
           } else {
             actualValue = actualOutput;
           }
+          
+          console.log(`Expected: ${JSON.stringify(expectedOutput)}, Actual: ${JSON.stringify(actualValue)}`);
           
           // Compare with expected output
           if (expectedOutput === null && actualValue === null) {
@@ -141,6 +167,7 @@ def run_test(code, test_input):
           failed++;
         }
       } catch (jsError) {
+        console.error("JavaScript error during test execution:", jsError);
         results.push({
           input: testCase.input,
           expected: testCase.expected_output,
