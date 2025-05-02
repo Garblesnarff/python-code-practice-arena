@@ -2,12 +2,16 @@
 import { Problem } from '../data/problems';
 import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
+import SolutionExplanation from './SolutionExplanation';
+import { useState } from 'react';
 
 interface ProblemDescriptionProps {
   problem: Problem;
 }
 
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
+  const [showSolution, setShowSolution] = useState(false);
+  
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Easy':
@@ -19,6 +23,10 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
       default:
         return 'bg-blue-500 hover:bg-blue-600';
     }
+  };
+
+  const toggleSolution = () => {
+    setShowSolution(!showSolution);
   };
 
   return (
@@ -59,6 +67,12 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
             </div>
           </div>
         )}
+        
+        <SolutionExplanation 
+          problem={problem} 
+          isVisible={showSolution} 
+          onToggle={toggleSolution} 
+        />
       </div>
     </div>
   );
