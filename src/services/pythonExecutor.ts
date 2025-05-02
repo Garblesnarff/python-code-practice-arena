@@ -17,6 +17,7 @@ export const executePythonCode = async (
     pyodide.runPython(`
 import sys
 import traceback
+import inspect
 
 def run_test(code, test_input):
     try:
@@ -38,12 +39,28 @@ def run_test(code, test_input):
         # Get the function
         function = namespace[function_name]
         
-        # Call the function with the test input
-        if isinstance(test_input, list) and len(test_input) > 0 and isinstance(test_input[0], list):
-            # If it's a list of arguments
-            result = function(*test_input)
+        # Get function signature to check parameter count
+        sig = inspect.signature(function)
+        param_count = len(sig.parameters)
+        
+        # Call the function based on parameter count and input type
+        if param_count == 0:
+            # Function takes no parameters, ignore any input
+            result = function()
+        elif isinstance(test_input, list):
+            if len(test_input) == 0:
+                # Empty input list but function expects parameters
+                if param_count > 0:
+                    raise Exception(f"Function {function_name} expects {param_count} arguments but none were provided")
+                result = function()
+            elif isinstance(test_input[0], list):
+                # If it's a list of arguments
+                result = function(*test_input)
+            else:
+                # Single argument
+                result = function(test_input)
         else:
-            # Single argument
+            # Single non-list argument
             result = function(test_input)
             
         return {
