@@ -47,21 +47,24 @@ def run_test(code, test_input):
             # Function takes no parameters, ignore any input
             result = function()
         elif isinstance(test_input, list):
+            # Handle array inputs with proper unpacking
             if len(test_input) == 0:
                 # Empty input list but function expects parameters
                 if param_count > 0:
                     raise Exception(f"Function {function_name} expects {param_count} arguments but none were provided")
                 result = function()
-            # This is the key part: unpacking array inputs properly
-            elif param_count > 1:
-                # For multi-parameter functions like add_numbers(a, b)
-                # When input is [2, 3], we need to call it as add_numbers(2, 3)
-                result = function(*test_input)
-            else:
-                # For single parameter functions, pass input as is
+            elif param_count == 1:
+                # For single parameter functions, pass the entire list as one argument
                 result = function(test_input)
+            else:
+                # For multi-parameter functions, unpack the list items as separate arguments
+                if len(test_input) != param_count:
+                    raise Exception(f"Function {function_name} expects {param_count} arguments but got {len(test_input)}")
+                result = function(*test_input)
         else:
             # Single non-list argument
+            if param_count > 1:
+                raise Exception(f"Function {function_name} expects {param_count} arguments but got 1")
             result = function(test_input)
             
         return {
