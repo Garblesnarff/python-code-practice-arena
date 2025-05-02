@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import CodeEditor from '@/components/CodeEditor';
 import ProblemDescription from '@/components/ProblemDescription';
@@ -10,6 +9,7 @@ import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pyth
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
+import { Trash } from 'lucide-react';
 
 const Index = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -96,6 +96,17 @@ const Index = () => {
     }
   };
 
+  const handleClearCode = () => {
+    setCode(currentProblem?.starter_code || '');
+    setTestResults(null);
+    
+    toast({
+      title: 'Code Reset',
+      description: 'Your code has been reset to the starter code.',
+      variant: 'default'
+    });
+  };
+
   if (isPyodideLoading) {
     return <LoadingOverlay />;
   }
@@ -128,9 +139,24 @@ const Index = () => {
               <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h2 className="text-lg font-semibold">Code Editor</h2>
-                  <Button onClick={handleRunTests} disabled={isExecuting}>
-                    {isExecuting ? 'Running...' : 'Run Tests'}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleClearCode}
+                      title="Clear Code"
+                    >
+                      <Trash className="mr-1" size={16} />
+                      Clear
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={handleRunTests} 
+                      disabled={isExecuting}
+                    >
+                      {isExecuting ? 'Running...' : 'Run Tests'}
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <CodeEditor 
