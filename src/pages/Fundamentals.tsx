@@ -118,10 +118,10 @@ const Fundamentals = () => {
         onSelectProblem={handleSelectProblem}
       />
       
-      <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-14rem)]">
-        <ProblemSection problem={currentProblem} />
+      <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-14rem)]">
+        <ProblemSection problem={currentProblem} className="lg:col-span-2" />
         
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 lg:col-span-3">
           <CodeEditorSection 
             code={code}
             onChange={handleCodeChange}

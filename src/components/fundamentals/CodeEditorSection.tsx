@@ -21,7 +21,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   isExecuting 
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col">
+    <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
       <div className="flex items-center justify-between p-4 border-b">
         <h2 className="text-lg font-semibold">Code Editor</h2>
         <div className="flex gap-2">
