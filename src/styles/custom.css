@@ -1,0 +1,47 @@
+
+/* Additional custom styles */
+.prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  padding: 0.1em 0.2em;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0.2em;
+}
+
+.dark .prose code {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fix for monaco editor in dark mode */
+.monaco-editor .margin {
+  background-color: #1e1e1e !important;
+}
+
+/* Code syntax highlighting */
+.token.keyword {
+  color: #569cd6;
+}
+.token.function {
+  color: #dcdcaa;
+}
+.token.string {
+  color: #ce9178;
+}
+.token.comment {
+  color: #6a9955;
+}
+.token.number {
+  color: #b5cea8;
+}
+.token.operator {
+  color: #d4d4d4;
+}
