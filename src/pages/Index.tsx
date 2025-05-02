@@ -1,186 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import CodeEditor from '@/components/CodeEditor';
-import ProblemDescription from '@/components/ProblemDescription';
-import TestResults from '@/components/TestResults';
-import ProblemNavigation from '@/components/ProblemNavigation';
-import LoadingOverlay from '@/components/LoadingOverlay';
-import { problems } from '@/data/problems';
-import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/components/ui/use-toast';
-import { Trash } from 'lucide-react';
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
 
 const Index = () => {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [code, setCode] = useState('');
-  const [testResults, setTestResults] = useState<ExecutionResult | null>(null);
-  const [isPyodideLoading, setIsPyodideLoading] = useState(true);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const { toast } = useToast();
-
-  const currentProblem = problems[currentProblemIndex];
-
-  // Load Pyodide when the component mounts
-  useEffect(() => {
-    const loadPyodide = async () => {
-      try {
-        setIsPyodideLoading(true);
-        await initPyodide();
-      } catch (error) {
-        console.error('Failed to initialize Pyodide:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to initialize Python environment. Please reload the page.',
-          variant: 'destructive'
-        });
-      } finally {
-        setIsPyodideLoading(false);
-      }
-    };
-
-    loadPyodide();
-  }, [toast]);
-
-  // Reset code and test results when problem changes
-  useEffect(() => {
-    setCode(currentProblem?.starter_code || '');
-    setTestResults(null);
-  }, [currentProblemIndex, currentProblem?.starter_code]);
-
-  const handleCodeChange = (newCode: string) => {
-    setCode(newCode);
-  };
-
-  const handleSelectProblem = (index: number) => {
-    setCurrentProblemIndex(index);
-  };
-
-  const handleRunTests = async () => {
-    if (!code.trim()) {
-      toast({
-        title: 'Empty Solution',
-        description: 'Please write some code before running tests.',
-        variant: 'destructive'
-      });
-      return;
+  const categories = [
+    {
+      title: "Python Fundamentals",
+      description: "New to programming? Start here to learn the basics of Python programming - variables, functions, conditionals, and more.",
+      path: "/fundamentals",
+      color: "bg-blue-500",
+      level: "Beginner"
+    },
+    {
+      title: "Easy Problems",
+      description: "Ready for a challenge? Practice with simple problems focusing on lists, strings, and basic algorithms.",
+      path: "/easy",
+      color: "bg-green-500",
+      level: "Easy"
+    },
+    {
+      title: "Medium Problems",
+      description: "Build your problem-solving skills with more complex challenges involving multiple concepts.",
+      path: "/medium",
+      color: "bg-yellow-500", 
+      level: "Intermediate"
     }
-
-    try {
-      setIsExecuting(true);
-      const results = await executePythonCode(code, currentProblem.test_cases);
-      setTestResults(results);
-      
-      if (results.summary.passed === results.summary.total) {
-        toast({
-          title: 'Success!',
-          description: `All ${results.summary.total} tests passed! 🎉`,
-          variant: 'default'
-        });
-      } else {
-        toast({
-          title: 'Tests Completed',
-          description: `Passed ${results.summary.passed} of ${results.summary.total} tests.`,
-          variant: 'default'
-        });
-      }
-    } catch (error) {
-      console.error('Error running tests:', error);
-      toast({
-        title: 'Execution Error',
-        description: error instanceof Error ? error.message : 'An error occurred while running your code.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsExecuting(false);
-    }
-  };
-
-  const handleClearCode = () => {
-    setCode(currentProblem?.starter_code || '');
-    setTestResults(null);
-    
-    toast({
-      title: 'Code Reset',
-      description: 'Your code has been reset to the starter code.',
-      variant: 'default'
-    });
-  };
-
-  if (isPyodideLoading) {
-    return <LoadingOverlay />;
-  }
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Python Practice Arena</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Python Learning Arena</h1>
+          <p className="mt-2 text-lg text-gray-600 dark:text-gray-300">
+            Master Python programming through interactive challenges - from basics to advanced concepts.
+          </p>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
-          <ProblemNavigation
-            problems={problems}
-            currentProblemIndex={currentProblemIndex}
-            onSelectProblem={handleSelectProblem}
-          />
-          
-          <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-14rem)]">
-            <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col">
-              <h2 className="text-lg font-semibold p-4 border-b">Problem</h2>
-              <div className="flex-1 overflow-hidden">
-                <ProblemDescription problem={currentProblem} />
-              </div>
-            </div>
-            
-            <div className="flex flex-col gap-6">
-              <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="text-lg font-semibold">Code Editor</h2>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleClearCode}
-                      title="Clear Code"
-                    >
-                      <Trash className="mr-1" size={16} />
-                      Clear
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      onClick={handleRunTests} 
-                      disabled={isExecuting}
-                    >
-                      {isExecuting ? 'Running...' : 'Run Tests'}
-                    </Button>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category, index) => (
+            <Link to={category.path} key={index} className="block">
+              <Card className="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                <CardHeader className={`${category.color} text-white rounded-t-lg`}>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">{category.title}</CardTitle>
+                    <span className="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium">
+                      {category.level}
+                    </span>
                   </div>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <CodeEditor 
-                    code={code} 
-                    onChange={handleCodeChange} 
-                    isExecuting={isExecuting}
-                  />
-                </div>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
-                <h2 className="text-lg font-semibold p-4 border-b">Results</h2>
-                <div className="flex-1 overflow-hidden">
-                  <TestResults results={testResults} />
-                </div>
-              </div>
-            </div>
-          </div>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <CardDescription className="text-base">
+                    {category.description}
+                  </CardDescription>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Start Learning</span>
+                  <ChevronRight className="h-5 w-5" />
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-16 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">About This Learning Platform</h2>
+          <p className="mb-4">
+            This platform is designed to help you learn Python programming from scratch, with a focus on understanding the fundamentals first before tackling more complex problems.
+          </p>
+          <p className="mb-4">
+            Each challenge comes with:
+          </p>
+          <ul className="list-disc list-inside space-y-2 pl-4 mb-4">
+            <li>Clear problem descriptions</li>
+            <li>Example inputs and outputs</li>
+            <li>Starter code to help you begin</li>
+            <li>Step-by-step explanations of solutions</li>
+            <li>Automated tests to verify your solutions</li>
+          </ul>
+          <p>
+            Start with the Python Fundamentals section if you're new to programming, or jump straight to Easy Problems if you're familiar with basic concepts.
+          </p>
         </div>
       </main>
       
-      <footer className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center text-sm text-gray-500">
-          Python Coding Practice Arena - Practice your coding skills for technical interviews
+      <footer className="bg-white dark:bg-gray-800 shadow mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm text-gray-500">
+          Python Learning Arena - Master Python programming through practice
         </div>
       </footer>
     </div>
