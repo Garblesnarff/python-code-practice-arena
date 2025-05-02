@@ -1,4 +1,3 @@
-
 import { initPyodide } from './pyodideLoader';
 import type { ExecutionResult, TestResult } from './testTypes';
 
@@ -53,11 +52,15 @@ def run_test(code, test_input):
                 if param_count > 0:
                     raise Exception(f"Function {function_name} expects {param_count} arguments but none were provided")
                 result = function()
-            elif isinstance(test_input[0], list):
-                # If it's a list of arguments
+            elif isinstance(test_input[0], list) and not param_count == 1:
+                # If it's a list of arguments for a function that expects multiple params
+                result = function(*test_input)
+            elif param_count > 1 and len(test_input) == param_count:
+                # If the function expects multiple parameters and we have the right number of arguments
+                # This is the key fix for functions like add_numbers(a, b) with input [2, 3]
                 result = function(*test_input)
             else:
-                # Single argument
+                # Single argument or a list that should be passed as a single argument
                 result = function(test_input)
         else:
             # Single non-list argument
