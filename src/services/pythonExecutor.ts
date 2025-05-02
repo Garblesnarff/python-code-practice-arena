@@ -47,45 +47,60 @@ def run_test(code, test_input):
         # For debugging
         print(f"Function: {function_name}, Parameters: {param_count}, Input type: {type(test_input)}")
         
+        # Convert test_input to Python types if it's a list
+        if isinstance(test_input, list):
+            # Explicit conversion to ensure it's a proper Python list
+            py_input = list(test_input)
+            print(f"Converted input: {py_input}, type: {type(py_input)}")
+        else:
+            py_input = test_input
+            
         # Call the function based on parameter count and input type
         if param_count == 0:
             # Function takes no parameters, ignore any input
             result = function()
-        elif isinstance(test_input, list):
-            # Handle array inputs with proper unpacking
-            if len(test_input) == 0:
+        elif isinstance(py_input, list):
+            # Handle list inputs with proper unpacking
+            if len(py_input) == 0:
                 # Empty input list but function expects parameters
                 if param_count > 0:
                     raise Exception(f"Function {function_name} expects {param_count} arguments but none were provided")
                 result = function()
             elif param_count == 1:
-                # Function expects one parameter - pass the list as is if that's what it wants
-                result = function(test_input)
+                # Function expects one parameter - pass the list as is
+                result = function(py_input)
             else:
-                # For multi-parameter functions, properly unpack list items
-                if len(test_input) != param_count:
-                    # First try with the entire list if lengths don't match
-                    try:
-                        result = function(test_input)
-                    except Exception as unpack_err:
-                        raise Exception(f"Function {function_name} expects {param_count} arguments but got {len(test_input)}")
-                else:
-                    # Only unpack if the number of items matches parameter count
-                    try:
-                        # Use Python's apply functionality to unpack arguments
-                        result = function(*test_input)
-                    except TypeError as unpack_error:
-                        # Fallback: try calling with the entire list if unpacking fails
+                # For multi-parameter functions - we need special handling
+                if len(py_input) == param_count:
+                    # If the number of list items equals parameter count, unpack them
+                    print(f"Unpacking {py_input} for {function_name}")
+                    
+                    # Direct approach - pass each argument individually
+                    if param_count == 2:
+                        result = function(py_input[0], py_input[1])
+                    elif param_count == 3:
+                        result = function(py_input[0], py_input[1], py_input[2])
+                    elif param_count == 4:
+                        result = function(py_input[0], py_input[1], py_input[2], py_input[3])
+                    else:
+                        # For more parameters, try unpacking or fallback
                         try:
-                            result = function(test_input)
-                        except Exception as secondary_error:
-                            # If both methods fail, raise a clear error
-                            raise Exception(f"Could not call {function_name} with the provided input: {test_input}. Error: {str(secondary_error)}")
+                            result = function(*py_input)
+                        except Exception as unpack_err:
+                            print(f"Unpacking error: {unpack_err}")
+                            # Create argument string for eval approach
+                            args_str = ", ".join([repr(arg) for arg in py_input])
+                            exec_str = f"result = function({args_str})"
+                            print(f"Trying: {exec_str}")
+                            # Use eval to unpack arguments explicitly
+                            exec(exec_str, {"function": function}, locals())
+                else:
+                    raise Exception(f"Function {function_name} expects {param_count} arguments but got {len(py_input)}")
         else:
             # Single non-list argument
             if param_count > 1:
                 raise Exception(f"Function {function_name} expects {param_count} arguments but got 1")
-            result = function(test_input)
+            result = function(py_input)
             
         return {
             "result": result,
