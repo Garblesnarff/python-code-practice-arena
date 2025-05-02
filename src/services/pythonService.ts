@@ -1,5 +1,15 @@
 
-import { loadPyodide, PyodideInterface } from 'pyodide';
+import type { PyodideInterface } from 'pyodide';
+
+// Since we're using the CDN version, we need to declare the loadPyodide function
+declare global {
+  interface Window {
+    loadPyodide: (config: { indexURL: string }) => Promise<PyodideInterface>;
+  }
+}
+
+// Use the global loadPyodide function
+const loadPyodide = window.loadPyodide;
 
 let pyodideInstance: PyodideInterface | null = null;
 let loading = false;
