@@ -54,6 +54,20 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
           explanation: "Python supports standard arithmetic operators: addition (+), subtraction (-), multiplication (*), division (/), and more. These operators work with numbers similar to how they work in mathematics."
         }
       ],
+      "greet_person": [
+        {
+          title: "String Concatenation",
+          explanation: "String concatenation means joining strings together. In Python, you can use the + operator to combine strings: `'hello' + 'world'` gives 'helloworld'. In this problem, we use concatenation to join 'Hello, ' with the person's name and an exclamation mark."
+        },
+        {
+          title: "F-strings",
+          explanation: "F-strings (formatted string literals) provide a concise and convenient way to embed expressions inside string literals. Introduced in Python 3.6, they allow you to include variables and expressions directly in strings by prefixing with 'f' and using curly braces. For example: `f\"Hello, {name}!\"` where `name` is a variable."
+        },
+        {
+          title: "String Operations",
+          explanation: "Strings in Python are sequences of characters. They can be manipulated in many ways: concatenated with +, repeated with *, sliced with [], and modified with methods like .upper(), .lower(), .replace(), etc. Python provides rich functionality for working with text data."
+        }
+      ],
       "sum_positives": [
         {
           title: "Conditional Statements",
@@ -72,6 +86,14 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
         {
           title: "String Concatenation",
           explanation: "String concatenation means joining strings together. In Python, you can use the + operator to combine strings: `'hello' + 'world'` gives 'helloworld'."
+        },
+        {
+          title: "String Slicing",
+          explanation: "Python allows you to extract parts of a string using slicing notation: `string[start:stop:step]`. The reverse string operation can be done concisely with the slice notation `s[::-1]`, which means start from the end and move backwards."
+        },
+        {
+          title: "For Loops with Range",
+          explanation: "When you need to iterate through indices, the range() function is useful. The syntax `range(start, stop, step)` generates numbers from start up to (but not including) stop, incrementing by step. For reverse iteration, you can use a negative step."
         }
       ],
       "count_vowels": [
@@ -82,6 +104,14 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
         {
           title: "Membership Test",
           explanation: "The `in` operator checks if an item is in a collection. For example, `'a' in 'apple'` is True because the letter 'a' is in the string 'apple'. We use this to check if a character is a vowel."
+        },
+        {
+          title: "Character Iteration",
+          explanation: "Strings in Python are sequences of characters. You can iterate through each character using a for loop: `for char in string:`. This allows you to examine or process each character individually."
+        },
+        {
+          title: "Accumulation Pattern",
+          explanation: "This problem demonstrates the accumulation pattern, where you initialize a variable (often to 0 or empty), then process items one by one, updating the accumulator as you go. Here, we initialize a counter to 0 and increment it each time we find a vowel."
         }
       ],
       "is_even": [
@@ -101,13 +131,105 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
           title: "Python Operators",
           explanation: "Python has several types of operators that are essential for programming:\n\n- Arithmetic operators: + (addition), - (subtraction), * (multiplication), / (division), // (floor division), % (modulo), ** (exponentiation)\n\n- Comparison operators: == (equal), != (not equal), > (greater than), < (less than), >= (greater or equal), <= (less or equal)\n\n- Logical operators: and, or, not\n\n- Assignment operators: = (simple assignment), +=, -=, *=, etc. (compound assignment)"
         }
+      ],
+      "find_max": [
+        {
+          title: "List Indexing",
+          explanation: "Python lists are indexed starting from 0. You can access elements using square brackets: `my_list[0]` gets the first element, `my_list[1]` the second, and so on."
+        },
+        {
+          title: "Conditional Logic",
+          explanation: "This problem requires checking if a number is greater than another (using the comparison operator `>`). We use this to compare each number in the list with our current maximum value."
+        },
+        {
+          title: "Variable Initialization",
+          explanation: "In this problem, we initialize a variable with a starting value (the first number in the list). As we iterate through the list, we update this variable whenever we find a larger number."
+        },
+        {
+          title: "Edge Case Handling",
+          explanation: "An important aspect of this problem is handling the edge case of an empty list. When a list has no elements, we return `None` (Python's way of representing nothing or no value)."
+        }
+      ],
+      "is_palindrome": [
+        {
+          title: "String Methods",
+          explanation: "Python provides useful string methods like `isalnum()` which checks if a character is alphanumeric (a letter or number), and `lower()` which converts a string to lowercase."
+        },
+        {
+          title: "String Manipulation",
+          explanation: "This problem demonstrates how to clean and process strings by removing non-alphanumeric characters and standardizing case. This is a common technique when comparing strings while ignoring formatting."
+        },
+        {
+          title: "String Reversal",
+          explanation: "We can reverse a string in Python using the slice notation `s[::-1]`. This creates a new string that reads the original string from end to beginning."
+        },
+        {
+          title: "String Comparison",
+          explanation: "The problem demonstrates comparing strings character by character. A palindrome reads the same forward and backward, so we can check if a string equals its reverse."
+        }
+      ],
+      "count_elements": [
+        {
+          title: "Dictionaries",
+          explanation: "Dictionaries are collections that store key-value pairs. They're useful for counting occurrences of items, as you can use the items as keys and the counts as values. Dictionaries are created using curly braces: `{}`."
+        },
+        {
+          title: "Dictionary Operations",
+          explanation: "This problem demonstrates basic dictionary operations: checking if a key exists (`if key in dictionary`), adding new key-value pairs (`dictionary[key] = value`), and updating existing values (`dictionary[key] += 1`)."
+        },
+        {
+          title: "Iteration",
+          explanation: "We iterate through each item in the input list and keep track of how many times we've seen it. This pattern of processing each item one by one is fundamental in programming."
+        },
+        {
+          title: "Frequency Counting",
+          explanation: "This is a classic frequency counting problem where we need to tally how many times each element appears. Dictionaries are perfect for this task because they provide fast lookups and make it easy to associate counts with specific elements."
+        }
+      ],
+      "fizzbuzz": [
+        {
+          title: "Divisibility Testing",
+          explanation: "This problem uses the modulo operator (%) to check if a number is divisible by 3 or 5. The expression `i % 3 == 0` is true when `i` is divisible by 3 (i.e., the remainder is 0)."
+        },
+        {
+          title: "Conditional Logic",
+          explanation: "The solution uses multiple conditions with if-elif-else statements to determine what to add to the result list. The order of conditions is important - we check for divisibility by both 3 and 5 first."
+        },
+        {
+          title: "List Building",
+          explanation: "We build a list incrementally by appending items one by one. This is a common pattern in Python when you need to construct a list based on some conditions or transformations."
+        },
+        {
+          title: "Type Conversion",
+          explanation: "This problem requires converting integers to strings using the `str()` function. This is necessary because our result list needs to contain string representations of numbers, not the numbers themselves."
+        }
+      ],
+      "two_sum": [
+        {
+          title: "Hash Maps (Dictionaries)",
+          explanation: "This solution uses a dictionary (Python's implementation of a hash map) to store numbers we've seen and their indices. Hash maps provide O(1) average time complexity for lookups, which makes this solution efficient."
+        },
+        {
+          title: "Complement Pattern",
+          explanation: "Rather than checking every possible pair (which would be inefficient), we use the 'complement' pattern. For each number, we calculate what other number would be needed to reach the target (`target - num`), and check if we've seen it before."
+        },
+        {
+          title: "Enumerate Function",
+          explanation: "The `enumerate()` function lets us iterate through a list while keeping track of both the values and their indices. This is useful when we need to return the indices of the two numbers."
+        },
+        {
+          title: "Single-pass Algorithm",
+          explanation: "This solution only needs to go through the list once (one pass), making it more efficient than a nested loop approach. We process each element once and check if we've already seen its complement."
+        },
+        {
+          title: "Space-Time Tradeoff",
+          explanation: "This problem demonstrates a common tradeoff: using extra space (the dictionary) to achieve better time complexity. Instead of O(n²) time with a nested loop, we get O(n) time at the cost of O(n) extra space."
+        }
       ]
     };
     
     return concepts[problem.id] || [];
   };
-
-  const concepts = getProgrammingConcepts();
 
   // Add Python operators explanation
   const getPythonOperators = () => {
