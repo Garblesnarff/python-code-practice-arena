@@ -262,6 +262,9 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
   // Check if the current problem is about operators
   const shouldShowOperators = problem.id === "is_even";
   const operators = getPythonOperators();
+  
+  // Get the programming concepts for this problem
+  const programmingConcepts = getProgrammingConcepts();
 
   return (
     <div className="p-4 h-full overflow-auto">
@@ -277,7 +280,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
           <ReactMarkdown>{problem.description}</ReactMarkdown>
         </div>
         
-        {concepts.length > 0 && (
+        {programmingConcepts.length > 0 && (
           <Accordion type="single" collapsible className="border rounded-md">
             <AccordionItem value="concepts">
               <AccordionTrigger className="px-4 py-2 flex items-center">
@@ -288,7 +291,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
               </AccordionTrigger>
               <AccordionContent className="px-4 pt-2 pb-4">
                 <div className="space-y-4">
-                  {concepts.map((concept, index) => (
+                  {programmingConcepts.map((concept, index) => (
                     <div key={index} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
                       <h3 className="font-medium text-base mb-1">{concept.title}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-300">{concept.explanation}</p>
