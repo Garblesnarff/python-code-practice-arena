@@ -32,9 +32,13 @@ def run_test(code, test_input):
         # Get function signature to check parameter count
         sig = inspect.signature(function)
         param_count = len(sig.parameters)
+
+        # Convert JsProxy to Python list if necessary before checks
+        if hasattr(test_input, 'to_py'):
+             test_input = test_input.to_py()
         
         # For debugging
-        print(f"Function: {function_name}, Parameters: {param_count}, Input type: {type(test_input)}")
+        print(f"Function: {function_name}, Parameters: {param_count}, Input type: {type(test_input)}, Input value: {test_input}")
         
         # Handle different input types and parameter counts
         if param_count == 0:
@@ -43,8 +47,13 @@ def run_test(code, test_input):
         elif isinstance(test_input, list):
             # Input is a list
             if param_count == 1:
-                # Function expects a single parameter (the whole list)
-                result = function(test_input)
+                # Function expects a single parameter.
+                # If input is a list of size 1, pass the element. Otherwise, pass the list.
+                if len(test_input) == 1:
+                    result = function(test_input[0]) 
+                else:
+                    # Pass the whole list if it has multiple elements (or is empty, though unlikely for test cases)
+                    result = function(test_input)
             elif len(test_input) == param_count:
                 # Function expects multiple parameters that match list length
                 # Direct unpacking based on parameter count for common cases
