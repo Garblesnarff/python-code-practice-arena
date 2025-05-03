@@ -68,6 +68,90 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem }) => {
           explanation: "Strings in Python are sequences of characters. They can be manipulated in many ways: concatenated with +, repeated with *, sliced with [], and modified with methods like .upper(), .lower(), .replace(), etc. Python provides rich functionality for working with text data."
         }
       ],
+      "string_length": [
+        {
+          title: "Built-in Functions",
+          explanation: "Python comes with many pre-written functions that are always available for you to use. The `len()` function is one of these built-in functions that returns the number of items in an object. For strings, it counts the number of characters."
+        },
+        {
+          title: "String Basics",
+          explanation: "In Python, a string is a sequence of characters enclosed in quotes (either single or double). Each character in a string occupies a position, and the total number of characters is the length of the string."
+        }
+      ],
+      "absolute_value": [
+        {
+          title: "Built-in Math Functions",
+          explanation: "Python provides several built-in functions for mathematical operations. The `abs()` function returns the absolute value of a number, which is its distance from zero on the number line regardless of direction."
+        },
+        {
+          title: "Numerical Operations",
+          explanation: "Python supports various numerical operations and functions. Understanding how to use these built-in capabilities is important for solving mathematical problems without having to implement complex logic yourself."
+        }
+      ],
+      "to_uppercase": [
+        {
+          title: "String Methods",
+          explanation: "Strings in Python have built-in methods (functions) that can be called using the dot notation. The `.upper()` method returns a new string with all characters converted to uppercase."
+        },
+        {
+          title: "Method Calls",
+          explanation: "In Python, methods are functions that belong to objects. They are called using the syntax `object.method()`. String methods don't change the original string (because strings are immutable in Python), but instead return a new string."
+        }
+      ],
+      "find_minimum": [
+        {
+          title: "Comparison Operators",
+          explanation: "Python uses standard comparison operators like < (less than), > (greater than), == (equal to), etc. These operators return Boolean values (True or False) and are often used in conditional statements."
+        },
+        {
+          title: "Conditional Statements",
+          explanation: "The `if-else` statement allows your program to make decisions based on conditions. If the condition after `if` is True, the first block of code runs; otherwise, the code after `else` runs."
+        },
+        {
+          title: "The min() Function",
+          explanation: "Python's built-in `min()` function returns the smallest item in an iterable or the smallest of two or more arguments. It's a concise alternative to writing conditional logic for finding the minimum value."
+        }
+      ],
+      "rectangle_area": [
+        {
+          title: "Mathematical Operations",
+          explanation: "Python can perform basic mathematical calculations using operators like + (addition), - (subtraction), * (multiplication), and / (division). This problem demonstrates multiplication to calculate area."
+        },
+        {
+          title: "Applied Mathematics",
+          explanation: "Programming often involves translating mathematical formulas into code. This simple example (area = width × height) shows how straightforward mathematical concepts are implemented in Python."
+        }
+      ],
+      "first_character": [
+        {
+          title: "String Indexing",
+          explanation: "In Python, you can access individual characters in a string using their position (index). Indices start at 0, so the first character is at index 0. The syntax is `string[index]`."
+        },
+        {
+          title: "Conditional Logic",
+          explanation: "This problem demonstrates the importance of checking for edge cases, such as empty strings. Using `if len(s) == 0:` prevents index errors that would occur if we tried to access the first character of an empty string."
+        }
+      ],
+      "last_character": [
+        {
+          title: "Negative Indexing",
+          explanation: "Python allows negative indices for sequences like strings. The index -1 refers to the last element, -2 to the second-to-last, and so on. This is a convenient way to access elements from the end of a sequence."
+        },
+        {
+          title: "String Handling",
+          explanation: "Working with strings often requires checking for empty strings and handling them appropriately to avoid errors. This problem shows how to safely access the last character while handling the empty string case."
+        }
+      ],
+      "replace_character": [
+        {
+          title: "String Methods",
+          explanation: "The `.replace()` method is one of many string methods in Python. It creates a new string where all occurrences of a specified substring are replaced with another substring."
+        },
+        {
+          title: "String Immutability",
+          explanation: "Strings in Python are immutable, meaning they cannot be changed after they are created. Methods like `.replace()` don't modify the original string, but return a new string with the changes applied."
+        }
+      ],
       "sum_positives": [
         {
           title: "Conditional Statements",
