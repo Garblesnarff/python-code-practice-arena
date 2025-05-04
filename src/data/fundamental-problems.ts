@@ -261,7 +261,7 @@ export const fundamentalProblems: Problem[] = [
   {
     id: "count_matching",
     title: "Count Matching Elements",
-    difficulty: 'Easy',
+    difficulty: 'Medium',
     description: "Write a function that counts how many elements appear in both of two lists. This introduces you to set operations in Python.",
     signature_hint: "def count_matching(list1, list2):",
     examples: [
@@ -281,7 +281,7 @@ export const fundamentalProblems: Problem[] = [
   {
     id: "format_phone_number",
     title: "Format Phone Number",
-    difficulty: 'Easy',
+    difficulty: 'Medium',
     description: "Write a function that formats a list of 10 digits into a phone number string: (XXX) XXX-XXXX. This introduces you to string formatting and list manipulation in Python.",
     signature_hint: "def format_phone_number(numbers):",
     examples: [
