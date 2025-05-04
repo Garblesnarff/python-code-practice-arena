@@ -1,4 +1,3 @@
-
 export const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
     case 'Easy':
@@ -320,6 +319,118 @@ export const getProgrammingConcepts = (problemId: string): ProgrammingConcept[] 
       {
         title: "Space-Time Tradeoff",
         explanation: "This problem demonstrates a common tradeoff: using extra space (the dictionary) to achieve better time complexity. Instead of O(n²) time with a nested loop, we get O(n) time at the cost of O(n) extra space."
+      }
+    ],
+    "sum_digits": [
+      {
+        title: "Type Conversion",
+        explanation: "Python allows you to convert between different data types. In this problem, we convert a number to a string using `str()` to access its digits, and then convert each digit back to an integer using `int()`."
+      },
+      {
+        title: "String Iteration",
+        explanation: "Strings in Python are sequences of characters that can be iterated through using a for loop. This allows you to process each character individually."
+      },
+      {
+        title: "Accumulation Pattern",
+        explanation: "This problem uses a common pattern where you initialize a variable (the sum) and then update it repeatedly as you process each element in a collection."
+      }
+    ],
+    "count_matching": [
+      {
+        title: "Set Operations",
+        explanation: "Sets in Python are collections with no duplicate elements. They support mathematical operations like intersection, union, and difference. The intersection of two sets contains all elements that are common to both sets."
+      },
+      {
+        title: "Type Conversion",
+        explanation: "You can convert other collection types (like lists) to sets using the `set()` constructor. This is useful when you need to remove duplicates or use set operations."
+      },
+      {
+        title: "Efficient Lookups",
+        explanation: "Sets provide O(1) average case complexity for membership testing, which makes them more efficient than lists for checking if an element exists in a collection."
+      }
+    ],
+    "format_phone_number": [
+      {
+        title: "List Comprehension",
+        explanation: "List comprehensions provide a concise way to create lists based on existing iterables. In this problem, we use `[str(num) for num in numbers]` to convert each number in the list to a string."
+      },
+      {
+        title: "String Join Method",
+        explanation: "The `join()` method combines all items in an iterable into a single string, with the string on which the method is called used as the separator between elements."
+      },
+      {
+        title: "String Slicing",
+        explanation: "Python allows you to extract parts of a string using slicing notation: `string[start:stop]`. This creates a new string containing the characters from the start index up to (but not including) the stop index."
+      }
+    ],
+    "find_missing_number": [
+      {
+        title: "Mathematical Formulas in Programming",
+        explanation: "This problem uses the mathematical formula for the sum of consecutive integers from 0 to n: n * (n + 1) / 2. Using mathematical insights can often lead to elegant and efficient solutions."
+      },
+      {
+        title: "Sum Function",
+        explanation: "Python's built-in `sum()` function adds all items in an iterable. It's a concise way to calculate the total of all elements in a list or other collection."
+      },
+      {
+        title: "Arithmetic Operations",
+        explanation: "This solution involves basic arithmetic operations like addition, multiplication, and subtraction to find the missing number based on the difference between expected and actual sums."
+      }
+    ],
+    "is_rotation": [
+      {
+        title: "String Concatenation",
+        explanation: "Joining strings together using the + operator is called concatenation. In this problem, we concatenate a string with itself to create a new string that contains all possible rotations."
+      },
+      {
+        title: "Substring Testing",
+        explanation: "The `in` operator can check if one string is a substring of another. The expression `s2 in s1` returns True if s2 appears anywhere within s1."
+      },
+      {
+        title: "Problem Insight",
+        explanation: "This problem demonstrates how a clever insight (that a rotation of s1 must be a substring of s1+s1) can lead to a simple and efficient solution without having to check all possible rotations explicitly."
+      }
+    ],
+    "product_digits": [
+      {
+        title: "Type Conversion",
+        explanation: "Similar to the sum of digits problem, we convert between number and string types to easily access individual digits of a number."
+      },
+      {
+        title: "Multiplication Accumulation",
+        explanation: "We use a loop to accumulate a product, starting with the multiplicative identity (1) and multiplying by each digit. This is analogous to the sum accumulation pattern but uses multiplication instead."
+      },
+      {
+        title: "Edge Cases",
+        explanation: "This problem highlights the importance of edge cases: if any digit is 0, the entire product will be 0, regardless of the other digits."
+      }
+    ],
+    "first_non_repeating_character": [
+      {
+        title: "Dictionary for Counting",
+        explanation: "Dictionaries are excellent for counting occurrences because they provide fast lookups. We use a dictionary to track how many times each character appears in the string."
+      },
+      {
+        title: "Two-Pass Algorithm",
+        explanation: "This solution uses a two-pass approach: first counting all character occurrences, then finding the first character with a count of 1. This is more efficient than nested loops."
+      },
+      {
+        title: "Enumerate Function",
+        explanation: "Python's `enumerate()` function returns both the index and value of elements in an iterable, allowing us to get the position of the first non-repeating character."
+      }
+    ],
+    "merge_sorted_lists": [
+      {
+        title: "Two-Pointer Technique",
+        explanation: "This is a classic algorithm technique where you use two pointers to track positions in different collections, comparing elements at those positions to make decisions."
+      },
+      {
+        title: "Merge Algorithm",
+        explanation: "The merge algorithm is fundamental in computer science, forming the basis of merge sort and other important algorithms. It efficiently combines two sorted collections while maintaining order."
+      },
+      {
+        title: "Handling Exhausted Lists",
+        explanation: "An important part of the merge algorithm is handling what happens when one list is exhausted but the other still has elements. We need to ensure all remaining elements are added to the result."
       }
     ]
   };
