@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CodeEditor from '@/components/CodeEditor';
@@ -11,9 +12,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Trash } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-
-// Filter only medium problems
-const mediumProblems = mediumProblems;
 
 const MediumProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
