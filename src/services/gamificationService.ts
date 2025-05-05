@@ -54,10 +54,10 @@ export const completeProblem = async (
     if (completionError) throw completionError;
     
     // 2. Update user XP
-    const { error: updateError } = await supabase.rpc('add_user_xp', {
-      user_id: userId,
-      xp_amount: xpGained
-    });
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: xpGained }) })
+      .eq('id', userId);
     
     if (updateError) throw updateError;
     
@@ -159,10 +159,10 @@ export const awardAchievement = async (
     if (awardError) throw awardError;
     
     // Add XP for achievement
-    const { error: updateError } = await supabase.rpc('add_user_xp', {
-      user_id: userId,
-      xp_amount: achievement.xp_reward
-    });
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: achievement.xp_reward }) })
+      .eq('id', userId);
     
     if (updateError) throw updateError;
     
@@ -176,12 +176,12 @@ export const awardAchievement = async (
 // Check for first problem achievement
 const checkForFirstProblemAchievement = async (userId: string) => {
   try {
-    const { data: problems } = await supabase
+    const { data: problems, count } = await supabase
       .from('completed_problems')
-      .select('count')
+      .select('*', { count: 'exact' })
       .eq('user_id', userId);
     
-    if ((problems?.[0]?.count || 0) === 1) {
+    if (count === 1) {
       // Get "First Steps" achievement
       const { data: achievement } = await supabase
         .from('achievements')
@@ -202,22 +202,30 @@ const checkForFirstProblemAchievement = async (userId: string) => {
 const checkForCategoryAchievements = async (userId: string) => {
   try {
     // Get completed problems by difficulty
-    const { data: completedCounts, error } = await supabase
+    const { data: completedByDifficulty, error } = await supabase
       .from('completed_problems')
       .select('difficulty, count')
       .eq('user_id', userId)
-      .group('difficulty');
+      .select('difficulty, count(*)')
+      .order('difficulty')
+      .execute();
     
     if (error) throw error;
+    
+    // Convert to a more usable format
+    const completedCounts = {};
+    completedByDifficulty?.forEach(item => {
+      completedCounts[item.difficulty] = parseInt(item.count);
+    });
     
     // Get total problems by difficulty
     const fundamentalsCount = 10; // Replace with actual counts from your data
     const easyCount = 15;
     const mediumCount = 20;
     
-    const completedFundamentals = completedCounts?.find(d => d.difficulty === 'fundamentals')?.count || 0;
-    const completedEasy = completedCounts?.find(d => d.difficulty === 'easy')?.count || 0;
-    const completedMedium = completedCounts?.find(d => d.difficulty === 'medium')?.count || 0;
+    const completedFundamentals = completedCounts['fundamentals'] || 0;
+    const completedEasy = completedCounts['easy'] || 0;
+    const completedMedium = completedCounts['medium'] || 0;
     
     // Check for achievements
     if (completedFundamentals >= fundamentalsCount) {
@@ -330,16 +338,16 @@ export const updateLoginStreak = async (userId: string): Promise<void> => {
   }
 };
 
-// RPC function to safely add XP to user
+// Direct XP addition function
 export const addUserXP = async (
   userId: string,
   amount: number
 ): Promise<{ success: boolean; error?: any }> => {
   try {
-    const { error } = await supabase.rpc('add_user_xp', {
-      user_id: userId,
-      xp_amount: amount
-    });
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: amount }) })
+      .eq('id', userId);
     
     if (error) throw error;
     return { success: true };
