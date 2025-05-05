@@ -56,7 +56,7 @@ export const completeProblem = async (
     // 2. Update user XP
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: xpGained }) })
+      .update({ xp: supabase.auth.getUser().then(({ data }) => data.user?.id) === userId ? xp => xp + xpGained : undefined })
       .eq('id', userId);
     
     if (updateError) throw updateError;
@@ -161,7 +161,7 @@ export const awardAchievement = async (
     // Add XP for achievement
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: achievement.xp_reward }) })
+      .update({ xp: supabase.auth.getUser().then(({ data }) => data.user?.id) === userId ? xp => xp + achievement.xp_reward : undefined })
       .eq('id', userId);
     
     if (updateError) throw updateError;
@@ -176,9 +176,9 @@ export const awardAchievement = async (
 // Check for first problem achievement
 const checkForFirstProblemAchievement = async (userId: string) => {
   try {
-    const { data: problems, count } = await supabase
+    const { count } = await supabase
       .from('completed_problems')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'exact', head: true })
       .eq('user_id', userId);
     
     if (count === 1) {
@@ -204,18 +204,15 @@ const checkForCategoryAchievements = async (userId: string) => {
     // Get completed problems by difficulty
     const { data: completedByDifficulty, error } = await supabase
       .from('completed_problems')
-      .select('difficulty, count')
-      .eq('user_id', userId)
-      .select('difficulty, count(*)')
-      .order('difficulty')
-      .execute();
+      .select('difficulty')
+      .eq('user_id', userId);
     
     if (error) throw error;
     
-    // Convert to a more usable format
-    const completedCounts = {};
+    // Count problems by difficulty
+    const completedCounts: Record<string, number> = {};
     completedByDifficulty?.forEach(item => {
-      completedCounts[item.difficulty] = parseInt(item.count);
+      completedCounts[item.difficulty] = (completedCounts[item.difficulty] || 0) + 1;
     });
     
     // Get total problems by difficulty
@@ -346,7 +343,7 @@ export const addUserXP = async (
   try {
     const { error } = await supabase
       .from('user_profiles')
-      .update({ xp: supabase.rpc('add_user_xp', { user_id: userId, xp_amount: amount }) })
+      .update({ xp: supabase.auth.getUser().then(({ data }) => data.user?.id) === userId ? xp => xp + amount : undefined })
       .eq('id', userId);
     
     if (error) throw error;
