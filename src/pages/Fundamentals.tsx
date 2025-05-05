@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { fundamentalProblems } from '@/data/fundamental-problems';
+import { fundamentalProblems } from '@/data/fundamentals';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
 import { useToast } from '@/components/ui/use-toast';
 import LoadingOverlay from '@/components/LoadingOverlay';

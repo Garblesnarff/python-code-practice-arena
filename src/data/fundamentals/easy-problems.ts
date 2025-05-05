@@ -1,7 +1,7 @@
 
-import { Problem } from './problems';
+import { Problem } from '../problems';
 
-export const fundamentalProblems: Problem[] = [
+export const easyFundamentalProblems: Problem[] = [
   {
     id: "hello_world",
     title: "Hello World",
