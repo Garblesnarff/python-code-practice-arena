@@ -53,10 +53,21 @@ export const completeProblem = async (
       
     if (completionError) throw completionError;
     
-    // 2. Update user XP
+    // 2. Update user XP - First fetch current XP
+    const { data: profile, error: fetchError } = await supabase
+      .from('user_profiles')
+      .select('xp')
+      .eq('id', userId)
+      .single();
+      
+    if (fetchError) throw fetchError;
+    
+    // Calculate new XP value and update
+    const newXp = (profile?.xp || 0) + xpGained;
+    
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ xp: supabase.auth.getUser().then(({ data }) => data.user?.id) === userId ? xp => xp + xpGained : undefined })
+      .update({ xp: newXp })
       .eq('id', userId);
     
     if (updateError) throw updateError;
@@ -158,10 +169,21 @@ export const awardAchievement = async (
     
     if (awardError) throw awardError;
     
-    // Add XP for achievement
+    // Add XP for achievement - First, fetch current XP
+    const { data: profile, error: fetchError } = await supabase
+      .from('user_profiles')
+      .select('xp')
+      .eq('id', userId)
+      .single();
+      
+    if (fetchError) throw fetchError;
+    
+    // Calculate new XP value and update
+    const newXp = (profile?.xp || 0) + achievement.xp_reward;
+    
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ xp: achievement.xp_reward })
+      .update({ xp: newXp })
       .eq('id', userId);
     
     if (updateError) throw updateError;
