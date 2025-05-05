@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CodeEditor from '@/components/CodeEditor';
@@ -6,7 +5,7 @@ import ProblemDescription from '@/components/ProblemDescription';
 import TestResults from '@/components/TestResults';
 import ProblemNavigation from '@/components/ProblemNavigation';
 import LoadingOverlay from '@/components/LoadingOverlay';
-import { problems } from '@/data/problems';
+import { easyProblems } from '@/data/problems/easy-problems';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Trash } from 'lucide-react';
@@ -14,8 +13,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 // Filter only easy problems
-const easyProblems = problems.filter(problem => problem.difficulty === 'Easy');
-
 const EasyProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [code, setCode] = useState('');
