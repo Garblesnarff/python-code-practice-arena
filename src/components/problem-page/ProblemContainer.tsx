@@ -14,6 +14,7 @@ interface ProblemContainerProps {
   onCodeChange: (newCode: string) => void;
   onRunTests: () => void;
   onClearCode: () => void;
+  isCompleted?: boolean;
 }
 
 const ProblemContainer: React.FC<ProblemContainerProps> = ({
@@ -23,11 +24,12 @@ const ProblemContainer: React.FC<ProblemContainerProps> = ({
   isExecuting,
   onCodeChange,
   onRunTests,
-  onClearCode
+  onClearCode,
+  isCompleted = false
 }) => {
   return (
     <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-14rem)]">
-      <ProblemSection problem={problem} />
+      <ProblemSection problem={problem} isCompleted={isCompleted} />
       
       <div className="flex flex-col gap-6">
         <CodeEditorSection 

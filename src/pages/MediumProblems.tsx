@@ -9,6 +9,11 @@ import Footer from '@/components/problem-page/Footer';
 import BreadcrumbNav from '@/components/problem-page/BreadcrumbNav';
 import ProblemNavigation from '@/components/ProblemNavigation';
 import ProblemContainer from '@/components/problem-page/ProblemContainer';
+import { useAuth } from '@/contexts/AuthContext';
+import { completeProblem, getCompletedProblems } from '@/services/gamificationService';
+import XPNotification from '@/components/XPNotification';
+import { useNavigate } from 'react-router-dom';
+import { CompletedProblem } from '@/types/user';
 
 const MediumProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -16,9 +21,30 @@ const MediumProblems = () => {
   const [testResults, setTestResults] = useState<ExecutionResult | null>(null);
   const [isPyodideLoading, setIsPyodideLoading] = useState(true);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [completedProblems, setCompletedProblems] = useState<CompletedProblem[]>([]);
+  const [xpNotification, setXpNotification] = useState({ 
+    visible: false, 
+    message: '', 
+    type: 'xp' as 'xp' | 'level' | 'achievement' 
+  });
+  const [levelUpNotification, setLevelUpNotification] = useState({
+    visible: false,
+    message: '',
+    prevLevel: 0,
+    newLevel: 0
+  });
   const { toast } = useToast();
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
 
   const currentProblem = mediumProblems[currentProblemIndex];
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user && !isPyodideLoading) {
+      navigate('/auth');
+    }
+  }, [user, isPyodideLoading, navigate]);
 
   // Load Pyodide when the component mounts
   useEffect(() => {
@@ -41,11 +67,42 @@ const MediumProblems = () => {
     loadPyodide();
   }, [toast]);
 
+  // Load completed problems when user changes
+  useEffect(() => {
+    const loadCompletedProblems = async () => {
+      if (user) {
+        const problems = await getCompletedProblems(user.id);
+        setCompletedProblems(problems);
+      }
+    };
+    
+    loadCompletedProblems();
+  }, [user]);
+
   // Reset code and test results when problem changes
   useEffect(() => {
     setCode(currentProblem?.starter_code || '');
     setTestResults(null);
   }, [currentProblemIndex, currentProblem?.starter_code]);
+
+  // Watch for level changes
+  useEffect(() => {
+    if (profile && profile?.level > 1) {
+      // Store level in local storage to detect level changes
+      const prevLevel = parseInt(localStorage.getItem('userLevel') || '1');
+      
+      if (profile.level > prevLevel) {
+        setLevelUpNotification({
+          visible: true,
+          message: `Congratulations! You reached Level ${profile.level}!`,
+          prevLevel,
+          newLevel: profile.level
+        });
+        
+        localStorage.setItem('userLevel', profile.level.toString());
+      }
+    }
+  }, [profile]);
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
@@ -70,7 +127,34 @@ const MediumProblems = () => {
       const results = await executePythonCode(code, currentProblem.test_cases);
       setTestResults(results);
       
-      if (results.summary.passed === results.summary.total) {
+      // Check if all tests passed and award XP
+      if (results.summary.passed === results.summary.total && user) {
+        // Check if problem already completed
+        const isAlreadyCompleted = completedProblems.some(
+          p => p.problem_id === currentProblem.id
+        );
+        
+        if (!isAlreadyCompleted) {
+          const { success, xpGained } = await completeProblem(
+            user.id,
+            currentProblem.id,
+            'medium'
+          );
+          
+          if (success && xpGained > 0) {
+            // Show XP notification
+            setXpNotification({
+              visible: true,
+              message: `+${xpGained} XP gained!`,
+              type: 'xp'
+            });
+            
+            // Refresh completed problems
+            const problems = await getCompletedProblems(user.id);
+            setCompletedProblems(problems);
+          }
+        }
+        
         toast({
           title: 'Success!',
           description: `All ${results.summary.total} tests passed! 🎉`,
@@ -106,6 +190,10 @@ const MediumProblems = () => {
     });
   };
 
+  const isProblemCompleted = (problemId: string) => {
+    return completedProblems.some(p => p.problem_id === problemId);
+  };
+
   if (isPyodideLoading) {
     return <LoadingOverlay />;
   }
@@ -121,10 +209,27 @@ const MediumProblems = () => {
             currentProblemIndex={currentProblemIndex} 
           />
           
+          {user && profile && (
+            <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow mb-4 flex flex-wrap items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <div className="text-sm font-medium">Level {profile.level}</div>
+                  <div className="text-xs text-gray-500">{profile.xp} XP • {profile.xp_to_next_level} XP to next level</div>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <div className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-xs font-medium flex items-center">
+                  {completedProblems.filter(p => p.difficulty === 'medium').length} / {mediumProblems.length} completed
+                </div>
+              </div>
+            </div>
+          )}
+          
           <ProblemNavigation
             problems={mediumProblems}
             currentProblemIndex={currentProblemIndex}
             onSelectProblem={handleSelectProblem}
+            completedProblems={completedProblems.map(p => p.problem_id)}
           />
           
           <ProblemContainer 
@@ -135,11 +240,28 @@ const MediumProblems = () => {
             onCodeChange={handleCodeChange}
             onRunTests={handleRunTests}
             onClearCode={handleClearCode}
+            isCompleted={isProblemCompleted(currentProblem.id)}
           />
         </div>
       </main>
       
       <Footer />
+
+      {/* XP Notification */}
+      <XPNotification
+        message={xpNotification.message}
+        type={xpNotification.type}
+        visible={xpNotification.visible}
+        onClose={() => setXpNotification({ ...xpNotification, visible: false })}
+      />
+      
+      {/* Level Up Notification */}
+      <XPNotification
+        message={levelUpNotification.message}
+        type="level"
+        visible={levelUpNotification.visible}
+        onClose={() => setLevelUpNotification({ ...levelUpNotification, visible: false })}
+      />
     </div>
   );
 };

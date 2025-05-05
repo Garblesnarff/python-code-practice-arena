@@ -1,18 +1,20 @@
 
 import { Problem } from '../data/problems';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 
 interface ProblemNavigationProps {
   problems: Problem[];
   currentProblemIndex: number;
   onSelectProblem: (index: number) => void;
+  completedProblems?: string[];
 }
 
 const ProblemNavigation: React.FC<ProblemNavigationProps> = ({ 
   problems, 
   currentProblemIndex, 
-  onSelectProblem 
+  onSelectProblem,
+  completedProblems = []
 }) => {
   const hasPrevious = currentProblemIndex > 0;
   const hasNext = currentProblemIndex < problems.length - 1;
@@ -29,6 +31,10 @@ const ProblemNavigation: React.FC<ProblemNavigationProps> = ({
     }
   };
 
+  const isProblemCompleted = (problemId: string) => {
+    return completedProblems.includes(problemId);
+  };
+
   return (
     <div className="flex items-center justify-between">
       <Button
@@ -40,8 +46,11 @@ const ProblemNavigation: React.FC<ProblemNavigationProps> = ({
         <ChevronLeft className="mr-1 h-4 w-4" />
         Previous
       </Button>
-      <div className="text-sm font-medium">
+      <div className="text-sm font-medium flex items-center">
         Problem {currentProblemIndex + 1} of {problems.length}
+        {isProblemCompleted(problems[currentProblemIndex].id) && (
+          <CheckCircle className="ml-1 h-4 w-4 text-green-500" />
+        )}
       </div>
       <Button
         variant="outline"
