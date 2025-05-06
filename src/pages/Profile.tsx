@@ -7,15 +7,19 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Award, BookOpen, CheckCircle, Zap, Calendar, LogOut } from 'lucide-react';
+import { Award, BookOpen, CheckCircle, Zap, Calendar, LogOut, AlertCircle } from 'lucide-react';
 import { CompletedProblem, UserAchievement } from '@/types/user';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 const Profile = () => {
   const { user, profile, signOut } = useAuth();
   const [completedProblems, setCompletedProblems] = useState<CompletedProblem[]>([]);
   const [achievements, setAchievements] = useState<UserAchievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!user) {
@@ -24,31 +28,106 @@ const Profile = () => {
     }
 
     const loadProfileData = async () => {
-      setLoading(true);
-      
-      const problems = await getCompletedProblems(user.id);
-      setCompletedProblems(problems);
-      
-      const userAchievements = await getUserAchievements(user.id);
-      setAchievements(userAchievements);
-      
-      setLoading(false);
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Check if profile exists
+        if (!profile) {
+          // Try to create a profile if it doesn't exist
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: user.id,
+              username: user.email,
+              level: 1,
+              xp: 0,
+              xp_to_next_level: 100,
+              streak_days: 0
+            })
+            .single();
+            
+          if (profileError) {
+            console.error('Error creating profile:', profileError);
+            setError('Unable to create user profile. Please try again later.');
+            setLoading(false);
+            return;
+          }
+          
+          toast({
+            title: "Profile Created",
+            description: "Your profile has been created successfully.",
+            duration: 3000,
+          });
+          
+          // Refresh the page to load the new profile
+          window.location.reload();
+          return;
+        }
+        
+        // Load completed problems
+        const problems = await getCompletedProblems(user.id);
+        setCompletedProblems(problems);
+        
+        // Load user achievements
+        const userAchievements = await getUserAchievements(user.id);
+        setAchievements(userAchievements);
+        
+      } catch (err) {
+        console.error('Error loading profile data:', err);
+        setError('Failed to load profile data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
     
     loadProfileData();
-  }, [user, navigate]);
+  }, [user, navigate, profile, toast]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');
   };
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Error Loading Profile</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+          <Button variant="outline" className="ml-2" onClick={() => navigate('/')}>
+            Go to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Profile Not Found</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            We couldn't find your profile. Let's create one for you.
+          </p>
+          <Button onClick={() => window.location.reload()}>
+            Create Profile
+          </Button>
         </div>
       </div>
     );
@@ -104,7 +183,11 @@ const Profile = () => {
                       <span>XP: {profile.xp}</span>
                       <span>Next Level: {profile.xp + profile.xp_to_next_level}</span>
                     </div>
-                    <Progress value={(profile.xp_to_next_level - profile.xp_to_next_level) / profile.xp_to_next_level * 100} className="h-2" />
+                    <Progress 
+                      value={(profile.xp_to_next_level > 0 ? 
+                        ((profile.xp_to_next_level - profile.xp_to_next_level) / profile.xp_to_next_level) * 100 : 0)} 
+                      className="h-2" 
+                    />
                   </div>
                 </div>
                 
