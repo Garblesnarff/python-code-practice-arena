@@ -10,7 +10,7 @@ import ProfileContent from '@/components/profile/ProfileContent';
 import { useProfileData } from '@/hooks/useProfileData';
 
 const Profile = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { completedProblems, achievements, loading, error, createProfile } = useProfileData();
 
@@ -40,7 +40,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileHeader onSignOut={async () => {
-        await user.signOut?.();
+        await signOut();
         navigate('/auth');
       }} />
       <ProfileContent 
