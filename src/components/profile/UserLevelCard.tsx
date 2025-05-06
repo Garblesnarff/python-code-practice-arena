@@ -9,6 +9,13 @@ interface UserLevelCardProps {
 }
 
 const UserLevelCard: React.FC<UserLevelCardProps> = ({ profile, user }) => {
+  // Calculate XP progress as a percentage
+  // XP progress is calculated by comparing current XP against what's needed for next level
+  // For example: if next level requires 100 XP total, and user has 75 XP, progress is 75%
+  const totalXpForNextLevel = profile.xp + profile.xp_to_next_level;
+  const progressPercentage = profile.xp_to_next_level > 0 ?
+    (profile.xp / totalXpForNextLevel) * 100 : 100;
+
   return (
     <div className="flex flex-col md:flex-row md:items-center gap-4">
       <div className="relative flex-shrink-0">
@@ -26,11 +33,10 @@ const UserLevelCard: React.FC<UserLevelCardProps> = ({ profile, user }) => {
         <div className="w-full">
           <div className="flex justify-between text-xs mb-1">
             <span>XP: {profile.xp}</span>
-            <span>Next Level: {profile.xp + profile.xp_to_next_level}</span>
+            <span>Next Level: {totalXpForNextLevel}</span>
           </div>
           <Progress 
-            value={(profile.xp_to_next_level > 0 ? 
-              ((profile.xp_to_next_level - profile.xp_to_next_level) / profile.xp_to_next_level) * 100 : 0)} 
+            value={progressPercentage} 
             className="h-2" 
           />
         </div>
