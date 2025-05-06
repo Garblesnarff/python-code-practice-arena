@@ -9,6 +9,11 @@ import TestResults from '@/components/TestResults';
 import FundamentalsLayout from '@/components/fundamentals/FundamentalsLayout';
 import ProblemSection from '@/components/fundamentals/ProblemSection';
 import CodeEditorSection from '@/components/fundamentals/CodeEditorSection';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { completeProblem, getCompletedProblems } from '@/services/gamificationService';
+import { CompletedProblem } from '@/types/user';
+import XPNotification from '@/components/XPNotification';
 
 const Fundamentals = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -17,8 +22,44 @@ const Fundamentals = () => {
   const [isPyodideLoading, setIsPyodideLoading] = useState(true);
   const [isExecuting, setIsExecuting] = useState(false);
   const { toast } = useToast();
-
+  const navigate = useNavigate();
+  const { user, profile, loading } = useAuth();
+  const [completedProblems, setCompletedProblems] = useState<CompletedProblem[]>([]);
+  
+  // XP Notification States
+  const [xpNotification, setXpNotification] = useState({
+    visible: false,
+    message: '',
+    type: 'xp' as 'xp' | 'level' | 'achievement'
+  });
+  
   const currentProblem = fundamentalProblems[currentProblemIndex];
+  
+  // Check if user is authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to track your progress and earn XP.",
+        variant: "destructive"
+      });
+      navigate('/auth');
+    }
+  }, [user, loading, navigate, toast]);
+  
+  // Load user's completed problems
+  useEffect(() => {
+    const fetchCompletedProblems = async () => {
+      if (user) {
+        const problems = await getCompletedProblems(user.id);
+        setCompletedProblems(problems);
+      }
+    };
+    
+    if (!loading && user) {
+      fetchCompletedProblems();
+    }
+  }, [user, loading]);
 
   // Load Pyodide when the component mounts
   useEffect(() => {
@@ -55,6 +96,11 @@ const Fundamentals = () => {
     setCurrentProblemIndex(index);
   };
 
+  // Check if the current problem has been completed by the user
+  const isProblemCompleted = (problemId: string) => {
+    return completedProblems.some(problem => problem.problem_id === problemId);
+  };
+  
   const handleRunTests = async () => {
     if (!code.trim()) {
       toast({
@@ -76,6 +122,44 @@ const Fundamentals = () => {
           description: `All ${results.summary.total} tests passed! 🎉`,
           variant: 'default'
         });
+        
+        // Mark problem as completed and award XP if not already completed
+        if (user && !isProblemCompleted(currentProblem.id)) {
+          try {
+            const prevLevel = profile?.level || 1;
+            const { success, xpGained } = await completeProblem(
+              user.id,
+              currentProblem.id,
+              'fundamentals'
+            );
+            
+            if (success && xpGained > 0) {
+              // Show XP notification
+              setXpNotification({
+                visible: true,
+                message: `+${xpGained} XP earned!`,
+                type: 'xp'
+              });
+              
+              // Refresh completed problems
+              const updatedProblems = await getCompletedProblems(user.id);
+              setCompletedProblems(updatedProblems);
+              
+              // Check for level up
+              if (profile && profile.level > prevLevel) {
+                setTimeout(() => {
+                  setXpNotification({
+                    visible: true,
+                    message: `Level up! You're now level ${profile.level}!`,
+                    type: 'level'
+                  });
+                }, 4000); // Show after the XP notification disappears
+              }
+            }
+          } catch (error) {
+            console.error('Error awarding XP:', error);
+          }
+        }
       } else {
         toast({
           title: 'Tests Completed',
@@ -105,10 +189,17 @@ const Fundamentals = () => {
       variant: 'default'
     });
   };
+  
+  const handleNotificationClose = () => {
+    setXpNotification({...xpNotification, visible: false});
+  };
 
-  if (isPyodideLoading) {
+  if (isPyodideLoading || loading) {
     return <LoadingOverlay />;
   }
+  
+  // Extract completed problem IDs for navigation
+  const completedProblemIds = completedProblems.map(problem => problem.problem_id);
 
   return (
     <FundamentalsLayout currentProblemIndex={currentProblemIndex}>
@@ -116,10 +207,22 @@ const Fundamentals = () => {
         problems={fundamentalProblems}
         currentProblemIndex={currentProblemIndex}
         onSelectProblem={handleSelectProblem}
+        completedProblems={completedProblemIds}
+      />
+      
+      {/* XP Notification */}
+      <XPNotification 
+        message={xpNotification.message}
+        type={xpNotification.type}
+        visible={xpNotification.visible}
+        onClose={handleNotificationClose}
       />
       
       <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-14rem)]">
-        <ProblemSection problem={currentProblem} className="lg:col-span-2" />
+        <ProblemSection 
+          problem={currentProblem} 
+          className="lg:col-span-2" 
+        />
         
         <div className="flex flex-col gap-6 lg:col-span-3">
           <CodeEditorSection 
