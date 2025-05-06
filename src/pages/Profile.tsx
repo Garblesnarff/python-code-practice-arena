@@ -10,7 +10,7 @@ import ProfileContent from '@/components/profile/ProfileContent';
 import { useProfileData } from '@/hooks/useProfileData';
 
 const Profile = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const { completedProblems, achievements, loading, error, createProfile } = useProfileData();
 
@@ -20,10 +20,10 @@ const Profile = () => {
     }
   }, [user, navigate]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
+  // Redirect to auth page if no user
+  if (!user) {
+    return null; // Will be redirected by the useEffect
+  }
 
   if (loading) {
     return <LoadingState />;
@@ -39,7 +39,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ProfileHeader onSignOut={handleSignOut} />
+      <ProfileHeader onSignOut={async () => {
+        await user.signOut?.();
+        navigate('/auth');
+      }} />
       <ProfileContent 
         profile={profile}
         user={user}
