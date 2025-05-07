@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getCompletedProblems } from '@/services/gamificationService';
 import XPNotificationManager from '@/components/notifications/XPNotificationManager';
 import { useProblemExecution } from '@/hooks/useProblemExecution';
+import NavigationBar from '@/components/layout/NavigationBar';
 
 const Fundamentals = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -60,44 +61,48 @@ const Fundamentals = () => {
   const completedProblemIds = completedProblems.map(problem => problem.problem_id);
 
   return (
-    <FundamentalsLayout currentProblemIndex={currentProblemIndex}>
-      <ProblemNavigation
-        problems={fundamentalProblems}
-        currentProblemIndex={currentProblemIndex}
-        onSelectProblem={handleSelectProblem}
-        completedProblems={completedProblemIds}
-      />
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <NavigationBar />
       
-      {/* XP Notification */}
-      <XPNotificationManager 
-        notification={xpNotification}
-        onNotificationClose={handleNotificationClose}
-      />
-      
-      <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-14rem)]">
-        <ProblemSection 
-          problem={currentProblem} 
-          className="lg:col-span-2" 
+      <FundamentalsLayout currentProblemIndex={currentProblemIndex}>
+        <ProblemNavigation
+          problems={fundamentalProblems}
+          currentProblemIndex={currentProblemIndex}
+          onSelectProblem={handleSelectProblem}
+          completedProblems={completedProblemIds}
         />
         
-        <div className="flex flex-col gap-6 lg:col-span-3">
-          <CodeEditorSection 
-            code={code}
-            onChange={handleCodeChange}
-            onRun={handleRunTests}
-            onClear={handleClearCode}
-            isExecuting={isExecuting}
+        {/* XP Notification */}
+        <XPNotificationManager 
+          notification={xpNotification}
+          onNotificationClose={handleNotificationClose}
+        />
+        
+        <div className="mt-4 flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-14rem)]">
+          <ProblemSection 
+            problem={currentProblem} 
+            className="lg:col-span-2" 
           />
           
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
-            <h2 className="text-lg font-semibold p-4 border-b">Results</h2>
-            <div className="flex-1 overflow-hidden">
-              <TestResults results={testResults} />
+          <div className="flex flex-col gap-6 lg:col-span-3">
+            <CodeEditorSection 
+              code={code}
+              onChange={handleCodeChange}
+              onRun={handleRunTests}
+              onClear={handleClearCode}
+              isExecuting={isExecuting}
+            />
+            
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
+              <h2 className="text-lg font-semibold p-4 border-b">Results</h2>
+              <div className="flex-1 overflow-hidden">
+                <TestResults results={testResults} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </FundamentalsLayout>
+      </FundamentalsLayout>
+    </div>
   );
 };
 

@@ -8,9 +8,10 @@ import ErrorState from '@/components/profile/ErrorState';
 import ProfileNotFound from '@/components/profile/ProfileNotFound';
 import ProfileContent from '@/components/profile/ProfileContent';
 import { useProfileData } from '@/hooks/useProfileData';
+import Layout from '@/components/layout/Layout';
 
 const Profile = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const { completedProblems, achievements, loading, error, createProfile } = useProfileData();
 
@@ -26,30 +27,38 @@ const Profile = () => {
   }
 
   if (loading) {
-    return <LoadingState />;
+    return (
+      <Layout>
+        <LoadingState />
+      </Layout>
+    );
   }
 
   if (error) {
-    return <ErrorState error={error} />;
+    return (
+      <Layout>
+        <ErrorState error={error} />
+      </Layout>
+    );
   }
 
   if (!profile) {
-    return <ProfileNotFound onCreateProfile={createProfile} />;
+    return (
+      <Layout>
+        <ProfileNotFound onCreateProfile={createProfile} />
+      </Layout>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ProfileHeader onSignOut={async () => {
-        await signOut();
-        navigate('/auth');
-      }} />
+    <Layout>
       <ProfileContent 
         profile={profile}
         user={user}
         completedProblems={completedProblems}
         achievements={achievements}
       />
-    </div>
+    </Layout>
   );
 };
 

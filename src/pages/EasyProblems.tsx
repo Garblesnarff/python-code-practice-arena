@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { easyProblems } from '@/data/problems/easy-problems';
 import { useToast } from '@/components/ui/use-toast';
@@ -13,6 +12,7 @@ import XPNotificationManager from '@/components/notifications/XPNotificationMana
 import { useNavigate } from 'react-router-dom';
 import { useProblemExecution } from '@/hooks/useProblemExecution';
 import ProfileStatusBar from '@/components/problem-page/ProfileStatusBar';
+import NavigationBar from '@/components/layout/NavigationBar';
 
 const EasyProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -78,6 +78,7 @@ const EasyProblems = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <NavigationBar />
       <Header title="Easy Python Problems" />
 
       <main className="flex-1 flex flex-col">
