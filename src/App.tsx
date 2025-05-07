@@ -13,6 +13,8 @@ import MediumProblems from "./pages/MediumProblems";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import CourseDashboard from "./pages/CourseDashboard";
+import TopicDashboard from "./pages/TopicDashboard";
+import ProblemPage from "./pages/ProblemPage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/courses/:courseId" element={<CourseDashboard />} />
+            <Route path="/courses/:courseId/topics/:topicId" element={<TopicDashboard />} />
+            <Route path="/courses/:courseId/topics/:topicId/problems/:problemId" element={<ProblemPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

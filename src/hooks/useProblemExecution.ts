@@ -7,13 +7,16 @@ import { completeProblem, getCompletedProblems } from '@/services/gamificationSe
 import { CompletedProblem } from '@/types/user';
 import { useProfileData } from '@/hooks/useProfileData';
 import { Problem } from '@/data/problems';
+import { updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
 
 interface UseProblemExecutionProps {
   problem: Problem;
   difficulty: string;
+  courseId?: string;
+  topicId?: string;
 }
 
-export const useProblemExecution = ({ problem, difficulty }: UseProblemExecutionProps) => {
+export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: UseProblemExecutionProps) => {
   const [code, setCode] = useState(problem?.starter_code || '');
   const [testResults, setTestResults] = useState<ExecutionResult | null>(null);
   const [isPyodideLoading, setIsPyodideLoading] = useState(true);
@@ -101,7 +104,9 @@ export const useProblemExecution = ({ problem, difficulty }: UseProblemExecution
           const { success, xpGained } = await completeProblem(
             user.id,
             problem.id,
-            difficulty
+            difficulty,
+            courseId,
+            topicId
           );
           
           if (success && xpGained > 0) {
@@ -118,6 +123,11 @@ export const useProblemExecution = ({ problem, difficulty }: UseProblemExecution
             // Refresh completed problems
             const problems = await getCompletedProblems(user.id);
             setCompletedProblems(problems);
+            
+            // Update course progress if courseId provided
+            if (courseId) {
+              await updateCourseProgressAfterProblemCompletion(user.id, courseId, true);
+            }
             
             // Check for level up
             if (updatedProfile && updatedProfile.level > prevLevel) {

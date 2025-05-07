@@ -1,25 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import Layout from '@/components/layout/Layout';
+import CourseCards from '@/components/home/CourseCards';
+import LearningPathVisualizer from '@/components/home/LearningPathVisualizer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/use-toast';
-import { useProfileData } from '@/hooks/useProfileData';
+import { LogIn } from 'lucide-react';
 import { getCourses, getAllCourseProgress } from '@/services/courseService';
 import { Course, CourseProgress } from '@/types/user';
-import LearningHub from '@/components/home/LearningHub';
-import Layout from '@/components/layout/Layout';
 
 const Index = () => {
   const { user, profile } = useAuth();
-  const { completedProblems, achievements } = useProfileData();
-  const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
   const [courseProgress, setCourseProgress] = useState<CourseProgress[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
-  // Load courses and progress
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -32,98 +29,115 @@ const Index = () => {
           setCourseProgress(progressData);
         }
       } catch (error) {
-        console.error('Error loading courses data:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load course data.',
-          variant: 'destructive'
-        });
+        console.error('Error loading data:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     loadData();
-  }, [user, toast]);
+  }, [user]);
   
+  // Find the most recent course the user has accessed
+  const getLastAccessedCourse = (): { course: Course; progress: CourseProgress } | null => {
+    if (!courseProgress.length) return null;
+    
+    let mostRecentProgress = courseProgress[0];
+    for (const progress of courseProgress) {
+      if (!mostRecentProgress.last_accessed_timestamp || 
+          (progress.last_accessed_timestamp && 
+           new Date(progress.last_accessed_timestamp) > new Date(mostRecentProgress.last_accessed_timestamp))) {
+        mostRecentProgress = progress;
+      }
+    }
+    
+    const course = courses.find(c => c.id === mostRecentProgress.course_id);
+    return course ? { course, progress: mostRecentProgress } : null;
+  };
+  
+  const recentCourse = getLastAccessedCourse();
+
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {user && profile ? (
-          <LearningHub 
-            courses={courses}
-            progress={courseProgress}
-            totalCompletedProblems={completedProblems.length}
-            totalAchievements={achievements.length}
-          />
-        ) : (
-          <div>
-            <section className="mb-12">
-              <h2 className="text-3xl font-bold mb-6">Welcome to Python Learning Arena</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <p className="text-lg mb-4">
-                    Begin your journey to Python mastery with our structured learning path. Our platform offers:
-                  </p>
-                  <ul className="space-y-2 list-disc pl-5">
-                    <li>Comprehensive 7-course curriculum from basics to advanced topics</li>
-                    <li>Interactive exercises with real-time feedback</li>
-                    <li>Progress tracking and achievements</li>
-                    <li>Built-in Python execution environment - no installation required</li>
-                  </ul>
-                  <div className="mt-8">
-                    <Link to="/auth">
-                      <Button size="lg">Start Learning Now</Button>
-                    </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <section className="mb-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-4xl font-bold mb-4">
+              Welcome to Python Learning Arena
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+              Master Python programming through our comprehensive seven-course curriculum 
+              designed to take you from beginner to advanced!
+            </p>
+            {!user && (
+              <Button asChild size="lg">
+                <Link to="/auth">
+                  <LogIn className="mr-2 h-5 w-5" />
+                  Sign In to Get Started
+                </Link>
+              </Button>
+            )}
+          </div>
+        </section>
+
+        {user && recentCourse && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">Continue Learning</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle>{recentCourse.course.title}</CardTitle>
+                <CardDescription>
+                  Last accessed: {recentCourse.progress.last_accessed_timestamp 
+                    ? new Date(recentCourse.progress.last_accessed_timestamp).toLocaleDateString() 
+                    : 'Never'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4">
+                  <div className="flex justify-between mb-1 text-sm">
+                    <span>Progress</span>
+                    <span>
+                      {recentCourse.progress.problems_completed} / {Math.max(1, recentCourse.progress.total_problems)}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div 
+                      className="bg-primary h-2.5 rounded-full" 
+                      style={{ 
+                        width: `${(recentCourse.progress.problems_completed / Math.max(1, recentCourse.progress.total_problems)) * 100}%` 
+                      }}
+                    ></div>
                   </div>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4">Learning Path</h3>
-                  <ol className="space-y-3 list-decimal pl-5">
-                    <li>Python Foundations for Beginners</li>
-                    <li>Learning Simple Data Structures in Python</li>
-                    <li>Control Flow and Functions</li>
-                    <li>Object-Oriented Programming</li>
-                    <li>File Handling and Modules</li>
-                    <li>Error Handling and Debugging</li>
-                    <li>Advanced Python Concepts</li>
-                  </ol>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-bold mb-6">Featured Courses</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {loading ? (
-                  <p>Loading courses...</p>
-                ) : (
-                  courses.slice(0, 3).map(course => (
-                    <Card key={course.id}>
-                      <CardHeader>
-                        <CardTitle>{course.title}</CardTitle>
-                        <CardDescription>{course.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p>Learning objectives:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          {course.learning_objectives?.slice(0, 2).map((objective, i) => (
-                            <li key={i} className="text-sm">{objective}</li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                      <CardFooter>
-                        <Link to="/auth" className="w-full">
-                          <Button variant="outline" className="w-full">Sign in to Start</Button>
-                        </Link>
-                      </CardFooter>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </section>
-          </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {recentCourse.course.description}
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button asChild className="w-full">
+                  <Link to={`/courses/${recentCourse.course.id}`}>
+                    Continue Course
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </section>
         )}
+        
+        {user && (
+          <section className="mb-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <LearningPathVisualizer 
+              courses={courses} 
+              progress={courseProgress} 
+              currentCourseId={recentCourse?.course.id}
+            />
+          </section>
+        )}
+
+        <section>
+          <h2 className="text-2xl font-bold mb-6">All Courses</h2>
+          <CourseCards courses={courses} progress={courseProgress} />
+        </section>
       </div>
     </Layout>
   );

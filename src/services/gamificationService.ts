@@ -22,7 +22,9 @@ export const calculateXP = (difficulty: string): number => {
 export const completeProblem = async (
   userId: string,
   problemId: string,
-  difficulty: string
+  difficulty: string,
+  courseId?: string,
+  topicId?: string
 ): Promise<{ success: boolean; xpGained: number; error?: any }> => {
   try {
     const xpGained = calculateXP(difficulty);
@@ -47,7 +49,9 @@ export const completeProblem = async (
         user_id: userId,
         problem_id: problemId,
         difficulty: difficulty,
-        xp_earned: xpGained
+        xp_earned: xpGained,
+        course_id: courseId,
+        topic_id: topicId
       });
       
     if (completionError) throw completionError;
