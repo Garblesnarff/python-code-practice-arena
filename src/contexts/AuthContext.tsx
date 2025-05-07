@@ -12,7 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>; // New function to refresh profile
+  refreshProfile: () => Promise<UserProfile | null>; // Changed return type
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,15 +42,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // New function to refresh the user profile
-  const refreshProfile = async () => {
-    if (!user) return;
+  // Function to refresh the user profile
+  const refreshProfile = async (): Promise<UserProfile | null> => {
+    if (!user) return null;
     
     try {
       const refreshedProfile = await loadUserProfile(user.id);
       return refreshedProfile;
     } catch (error) {
       console.error('Error refreshing profile:', error);
+      return null;
     }
   };
 
@@ -124,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signIn,
         signUp,
         signOut,
-        refreshProfile, // Expose the refresh function
+        refreshProfile,
       }}
     >
       {children}

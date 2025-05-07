@@ -18,6 +18,10 @@ export interface CompletedProblem {
   difficulty: string;
   xp_earned: number;
   completed_at: string;
+  course_id?: string;
+  topic_id?: string;
+  completion_time_seconds?: number;
+  attempt_count?: number;
 }
 
 export interface Achievement {
@@ -35,4 +39,39 @@ export interface UserAchievement {
   achievement_id: string;
   unlocked_at: string;
   achievement?: Achievement;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
+  sequence_number: number;
+  prerequisite_course_ids?: string[];
+  learning_objectives?: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Topic {
+  id: string;
+  title: string;
+  description?: string;
+  course_id: string;
+  sequence_number: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CourseProgress {
+  id: string;
+  user_id: string;
+  course_id: string;
+  last_accessed_timestamp: string;
+  problems_completed: number;
+  total_problems: number;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
 }

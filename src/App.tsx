@@ -12,6 +12,7 @@ import EasyProblems from "./pages/EasyProblems";
 import MediumProblems from "./pages/MediumProblems";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import CourseDashboard from "./pages/CourseDashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/medium" element={<MediumProblems />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/courses/:courseId" element={<CourseDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

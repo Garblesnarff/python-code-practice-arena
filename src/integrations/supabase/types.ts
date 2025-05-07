@@ -545,30 +545,56 @@ export type Database = {
       }
       completed_problems: {
         Row: {
+          attempt_count: number | null
           completed_at: string
+          completion_time_seconds: number | null
+          course_id: string | null
           difficulty: string
           id: string
           problem_id: string
+          topic_id: string | null
           user_id: string
           xp_earned: number
         }
         Insert: {
+          attempt_count?: number | null
           completed_at?: string
+          completion_time_seconds?: number | null
+          course_id?: string | null
           difficulty: string
           id?: string
           problem_id: string
+          topic_id?: string | null
           user_id: string
           xp_earned: number
         }
         Update: {
+          attempt_count?: number | null
           completed_at?: string
+          completion_time_seconds?: number | null
+          course_id?: string | null
           difficulty?: string
           id?: string
           problem_id?: string
+          topic_id?: string | null
           user_id?: string
           xp_earned?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "completed_problems_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completed_problems_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "completed_problems_user_id_fkey"
             columns: ["user_id"]
@@ -577,6 +603,89 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      course_progress: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          id: string
+          is_completed: boolean | null
+          last_accessed_timestamp: string | null
+          problems_completed: number | null
+          total_problems: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_accessed_timestamp?: string | null
+          problems_completed?: number | null
+          total_problems?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          last_accessed_timestamp?: string | null
+          problems_completed?: number | null
+          total_problems?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string | null
+          description: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          learning_objectives: string[] | null
+          prerequisite_course_ids: string[] | null
+          sequence_number: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          prerequisite_course_ids?: string[] | null
+          sequence_number: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          prerequisite_course_ids?: string[] | null
+          sequence_number?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       dialogue_history: {
         Row: {
@@ -1367,6 +1476,44 @@ export type Database = {
             columns: ["base_timeline_id"]
             isOneToOne: false
             referencedRelation: "timelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          sequence_number: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          sequence_number: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          sequence_number?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]

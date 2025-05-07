@@ -93,9 +93,10 @@ export const useProfileData = () => {
 
   // Function to refresh all profile related data
   const refreshAllProfileData = async () => {
-    await refreshProfile();
+    const updatedProfile = await refreshProfile();
     await refetchProblems();
     await refetchAchievements();
+    return updatedProfile;
   };
 
   // Combine loading states

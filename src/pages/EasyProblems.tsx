@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { easyProblems } from '@/data/problems/easy-problems';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
@@ -34,7 +35,7 @@ const EasyProblems = () => {
     newLevel: 0
   });
   const { toast } = useToast();
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile } = useAuth();
   const { refreshAllProfileData } = useProfileData();
   const navigate = useNavigate();
 
@@ -145,7 +146,7 @@ const EasyProblems = () => {
           
           if (success && xpGained > 0) {
             // Refresh profile data to update XP and level
-            await refreshAllProfileData();
+            const updatedProfile = await refreshAllProfileData();
             
             // Show XP notification
             setXpNotification({
@@ -157,9 +158,6 @@ const EasyProblems = () => {
             // Refresh completed problems
             const problems = await getCompletedProblems(user.id);
             setCompletedProblems(problems);
-            
-            // Get updated profile
-            const updatedProfile = await refreshProfile();
             
             // Check for level up
             if (updatedProfile && updatedProfile.level > prevLevel) {
