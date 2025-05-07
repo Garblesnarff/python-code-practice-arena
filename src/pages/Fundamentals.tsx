@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { fundamentalProblems } from '@/data/fundamentals';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
@@ -14,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { completeProblem, getCompletedProblems } from '@/services/gamificationService';
 import { CompletedProblem } from '@/types/user';
 import XPNotification from '@/components/XPNotification';
+import { useProfileData } from '@/hooks/useProfileData';
 
 const Fundamentals = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -23,7 +23,8 @@ const Fundamentals = () => {
   const [isExecuting, setIsExecuting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading: authLoading, refreshProfile } = useAuth();
+  const { refreshAllProfileData } = useProfileData();
   const [completedProblems, setCompletedProblems] = useState<CompletedProblem[]>([]);
   
   // XP Notification States
@@ -37,7 +38,7 @@ const Fundamentals = () => {
   
   // Check if user is authenticated
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       toast({
         title: "Authentication Required",
         description: "Please log in to track your progress and earn XP.",
@@ -45,7 +46,7 @@ const Fundamentals = () => {
       });
       navigate('/auth');
     }
-  }, [user, loading, navigate, toast]);
+  }, [user, authLoading, navigate, toast]);
   
   // Load user's completed problems
   useEffect(() => {
@@ -56,10 +57,10 @@ const Fundamentals = () => {
       }
     };
     
-    if (!loading && user) {
+    if (!authLoading && user) {
       fetchCompletedProblems();
     }
-  }, [user, loading]);
+  }, [user, authLoading]);
 
   // Load Pyodide when the component mounts
   useEffect(() => {
@@ -134,6 +135,9 @@ const Fundamentals = () => {
             );
             
             if (success && xpGained > 0) {
+              // Refresh profile data to update XP and level
+              await refreshAllProfileData();
+              
               // Show XP notification
               setXpNotification({
                 visible: true,
@@ -144,6 +148,9 @@ const Fundamentals = () => {
               // Refresh completed problems
               const updatedProblems = await getCompletedProblems(user.id);
               setCompletedProblems(updatedProblems);
+              
+              // Get updated profile
+              await refreshProfile();
               
               // Check for level up
               if (profile && profile.level > prevLevel) {
@@ -194,7 +201,7 @@ const Fundamentals = () => {
     setXpNotification({...xpNotification, visible: false});
   };
 
-  if (isPyodideLoading || loading) {
+  if (isPyodideLoading || authLoading) {
     return <LoadingOverlay />;
   }
   

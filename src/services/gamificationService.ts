@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { CompletedProblem, Achievement, UserAchievement } from '@/types/user';
 import { useToast } from '@/components/ui/use-toast';
@@ -77,7 +76,8 @@ export const completeProblem = async (
     
     // 4. Check for category completion achievements
     await checkForCategoryAchievements(userId);
-    
+
+    // Return success
     return { success: true, xpGained };
   } catch (error) {
     console.error('Error completing problem:', error);

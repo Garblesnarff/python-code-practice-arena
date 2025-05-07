@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { easyProblems } from '@/data/problems/easy-problems';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
@@ -14,6 +13,7 @@ import { completeProblem, getCompletedProblems } from '@/services/gamificationSe
 import XPNotification from '@/components/XPNotification';
 import { useNavigate } from 'react-router-dom';
 import { CompletedProblem } from '@/types/user';
+import { useProfileData } from '@/hooks/useProfileData';
 
 const EasyProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
@@ -34,7 +34,8 @@ const EasyProblems = () => {
     newLevel: 0
   });
   const { toast } = useToast();
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
+  const { refreshAllProfileData } = useProfileData();
   const navigate = useNavigate();
 
   const currentProblem = easyProblems[currentProblemIndex];
@@ -135,6 +136,7 @@ const EasyProblems = () => {
         );
         
         if (!isAlreadyCompleted) {
+          const prevLevel = profile?.level || 1;
           const { success, xpGained } = await completeProblem(
             user.id,
             currentProblem.id,
@@ -142,6 +144,9 @@ const EasyProblems = () => {
           );
           
           if (success && xpGained > 0) {
+            // Refresh profile data to update XP and level
+            await refreshAllProfileData();
+            
             // Show XP notification
             setXpNotification({
               visible: true,
@@ -152,6 +157,20 @@ const EasyProblems = () => {
             // Refresh completed problems
             const problems = await getCompletedProblems(user.id);
             setCompletedProblems(problems);
+            
+            // Get updated profile
+            const updatedProfile = await refreshProfile();
+            
+            // Check for level up
+            if (updatedProfile && updatedProfile.level > prevLevel) {
+              setTimeout(() => {
+                setXpNotification({
+                  visible: true,
+                  message: `Level up! You're now level ${updatedProfile.level}!`,
+                  type: 'level'
+                });
+              }, 4000); // Show after the XP notification disappears
+            }
           }
         }
         

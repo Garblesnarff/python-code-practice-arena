@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useProfileData = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -16,7 +16,8 @@ export const useProfileData = () => {
   // Fetch completed problems using React Query
   const { 
     data: completedProblems = [],
-    isLoading: isLoadingProblems
+    isLoading: isLoadingProblems,
+    refetch: refetchProblems
   } = useQuery({
     queryKey: ['completedProblems', user?.id],
     queryFn: () => getCompletedProblems(user?.id as string),
@@ -27,7 +28,8 @@ export const useProfileData = () => {
   // Fetch user achievements using React Query
   const { 
     data: achievements = [],
-    isLoading: isLoadingAchievements
+    isLoading: isLoadingAchievements,
+    refetch: refetchAchievements
   } = useQuery({
     queryKey: ['achievements', user?.id],
     queryFn: () => getUserAchievements(user?.id as string),
@@ -65,8 +67,12 @@ export const useProfileData = () => {
         duration: 3000,
       });
       
-      // Refresh auth context data by reloading the page
-      window.location.reload();
+      // Refresh auth context profile data instead of reloading the page
+      refreshProfile().then(() => {
+        // After profile refresh, invalidate related queries
+        queryClient.invalidateQueries({ queryKey: ['completedProblems'] });
+        queryClient.invalidateQueries({ queryKey: ['achievements'] });
+      });
     },
     onError: (error) => {
       console.error('Error creating profile:', error);
@@ -85,6 +91,13 @@ export const useProfileData = () => {
     createProfileMutation();
   };
 
+  // Function to refresh all profile related data
+  const refreshAllProfileData = async () => {
+    await refreshProfile();
+    await refetchProblems();
+    await refetchAchievements();
+  };
+
   // Combine loading states
   const loading = isLoadingProblems || isLoadingAchievements || isCreatingProfile;
 
@@ -93,6 +106,7 @@ export const useProfileData = () => {
     achievements,
     loading,
     error,
-    createProfile
+    createProfile,
+    refreshAllProfileData
   };
 };
