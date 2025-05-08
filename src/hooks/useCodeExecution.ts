@@ -1,0 +1,70 @@
+
+import { useState } from 'react';
+import { executePythonCode, ExecutionResult } from '@/services/pythonService';
+import { useToast } from '@/components/ui/use-toast';
+import { Problem } from '@/data/problems';
+
+export const useCodeExecution = (problem: Problem) => {
+  const [code, setCode] = useState(problem?.starter_code || '');
+  const [testResults, setTestResults] = useState<ExecutionResult | null>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const { toast } = useToast();
+
+  // Reset code and test results when problem changes
+  const resetCode = () => {
+    setCode(problem?.starter_code || '');
+    setTestResults(null);
+  };
+
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
+  };
+
+  const handleClearCode = () => {
+    resetCode();
+    
+    toast({
+      title: 'Code Reset',
+      description: 'Your code has been reset to the starter code.',
+      variant: 'default'
+    });
+  };
+
+  const executeCode = async (testCases: any[]) => {
+    if (!code.trim()) {
+      toast({
+        title: 'Empty Solution',
+        description: 'Please write some code before running tests.',
+        variant: 'destructive'
+      });
+      return null;
+    }
+
+    try {
+      setIsExecuting(true);
+      const results = await executePythonCode(code, testCases);
+      setTestResults(results);
+      return results;
+    } catch (error) {
+      console.error('Error running tests:', error);
+      toast({
+        title: 'Execution Error',
+        description: error instanceof Error ? error.message : 'An error occurred while running your code.',
+        variant: 'destructive'
+      });
+      return null;
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  return {
+    code,
+    testResults,
+    isExecuting,
+    handleCodeChange,
+    executeCode,
+    handleClearCode,
+    resetCode
+  };
+};
