@@ -2,11 +2,13 @@
 import { Problem } from './types';
 import { easyProblems } from './easy-problems';
 import { mediumProblems } from './medium-problems';
+import { hardProblems } from './hard-problems';
 
 // We export all problems here
 export const problems: Problem[] = [
   ...easyProblems,
   ...mediumProblems,
+  ...hardProblems,
 ];
 
 // Re-export the Problem type

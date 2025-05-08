@@ -1,145 +1,53 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Book, ChevronDown, Home, LogIn, LogOut, User } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getCourses } from '@/services/courseService';
-import { Course } from '@/types/user';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
+import { useSearch } from '@/components/search/SearchProvider';
 
-const NavigationBar: React.FC = () => {
-  const { user, signOut } = useAuth();
-  const location = useLocation();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const loadCourses = async () => {
-      try {
-        const coursesData = await getCourses();
-        setCourses(coursesData);
-      } catch (error) {
-        console.error('Error loading courses:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCourses();
-  }, []);
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  const ListItem = React.forwardRef<
-    React.ElementRef<"a">,
-    React.ComponentPropsWithoutRef<"a">
-  >(({ className, title, children, ...props }, ref) => {
-    return (
-      <li>
-        <NavigationMenuLink asChild>
-          <a
-            ref={ref}
-            className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-              className
-            )}
-            {...props}
-          >
-            <div className="text-sm font-medium leading-none">{title}</div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-              {children}
-            </p>
-          </a>
-        </NavigationMenuLink>
-      </li>
-    );
-  });
-  ListItem.displayName = "ListItem";
+const NavigationBar = () => {
+  const { openSearch } = useSearch();
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-bold text-xl">Python Learning Arena</span>
-            </Link>
-            <nav className="ml-6 flex items-center space-x-4">
-              <Link to="/" className={`text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/' ? 'bg-gray-100 dark:bg-gray-700' : ''}`}>
-                <Home className="h-5 w-5 mr-1 inline" />
-                <span className="hidden sm:inline">Home</span>
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link to="/" className="text-xl font-bold text-primary">
+                Python Learning Arena
               </Link>
-
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="h-9">
-                      <Book className="h-5 w-5 mr-1 inline" />
-                      <span className="hidden sm:inline">Courses</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                        {loading ? (
-                          <li className="p-2">Loading courses...</li>
-                        ) : (
-                          courses.map((course) => (
-                            <ListItem
-                              key={course.id}
-                              title={course.title}
-                              href={`/courses/${course.id}`}
-                            >
-                              {course.description.substring(0, 60)}...
-                            </ListItem>
-                          ))
-                        )}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-
-              <Link to="/fundamentals" className={`text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/fundamentals' ? 'bg-gray-100 dark:bg-gray-700' : ''}`}>
+            </div>
+            <nav className="ml-6 flex space-x-4 items-center">
+              <Link to="/fundamentals" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
                 Fundamentals
               </Link>
-              <Link to="/easy" className={`text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/easy' ? 'bg-gray-100 dark:bg-gray-700' : ''}`}>
+              <Link to="/easy" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
                 Easy
               </Link>
-              <Link to="/medium" className={`text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/medium' ? 'bg-gray-100 dark:bg-gray-700' : ''}`}>
+              <Link to="/medium" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
                 Medium
+              </Link>
+              <Link to="/hard" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
+                Hard
               </Link>
             </nav>
           </div>
           <div className="flex items-center">
-            {user ? (
-              <>
-                <Link to="/profile" className={`text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/profile' ? 'bg-gray-100 dark:bg-gray-700' : ''}`}>
-                  <User className="h-5 w-5 mr-1 inline" />
-                  <span className="hidden sm:inline">Profile</span>
-                </Link>
-                <Button variant="ghost" onClick={handleSignOut} className="ml-2">
-                  <LogOut className="h-5 w-5 mr-1 inline" />
-                  <span className="hidden sm:inline">Sign Out</span>
-                </Button>
-              </>
-            ) : (
-              <Link to="/auth">
-                <Button variant="outline" className="ml-2">
-                  <LogIn className="h-5 w-5 mr-1 inline" />
-                  <span>Sign In</span>
-                </Button>
-              </Link>
-            )}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={openSearch}
+              className="mr-3"
+            >
+              <Search className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Search</span>
+              <kbd className="ml-2 hidden md:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+            <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
+              Profile
+            </Link>
           </div>
         </div>
       </div>
