@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import Layout from '@/components/layout/Layout';
 import { getCourseById, getTopicById, getProblemsByTopicId } from '@/services/courseService';
+import { getCompletedProblems } from '@/services/gamificationService';
 import { Course, Topic } from '@/types/user';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';

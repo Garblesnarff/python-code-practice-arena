@@ -9,7 +9,7 @@ interface BreadcrumbItem {
 }
 
 interface BreadcrumbNavProps {
-  items: BreadcrumbItem[];
+  items?: BreadcrumbItem[];
   difficulty?: string;
   currentProblemIndex?: number;
 }

@@ -7,11 +7,16 @@ import { CheckCircle } from 'lucide-react';
 interface ProblemSectionProps {
   problem: Problem;
   isCompleted?: boolean;
+  className?: string;
 }
 
-const ProblemSection: React.FC<ProblemSectionProps> = ({ problem, isCompleted = false }) => {
+const ProblemSection: React.FC<ProblemSectionProps> = ({ 
+  problem, 
+  isCompleted = false,
+  className = ''
+}) => {
   return (
-    <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col">
+    <div className={`bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col ${className}`}>
       <h2 className="text-lg font-semibold p-4 border-b flex items-center justify-between">
         <span>Problem</span>
         <div className="flex items-center">

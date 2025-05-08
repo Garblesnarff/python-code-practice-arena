@@ -84,8 +84,11 @@ const EasyProblems = () => {
       <main className="flex-1 flex flex-col">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
           <BreadcrumbNav 
-            difficulty="Easy" 
-            currentProblemIndex={currentProblemIndex} 
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Easy Problems', href: '/easy' },
+              { label: `Problem ${currentProblemIndex + 1}`, href: '#' }
+            ]}
           />
           
           {user && profile && (

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { mediumProblems } from '@/data/problems/medium-problems';
 import { executePythonCode, ExecutionResult, initPyodide } from '@/services/pythonService';
@@ -205,8 +204,11 @@ const MediumProblems = () => {
       <main className="flex-1 flex flex-col">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
           <BreadcrumbNav 
-            difficulty="Medium" 
-            currentProblemIndex={currentProblemIndex} 
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Medium Problems', href: '/medium' },
+              { label: `Problem ${currentProblemIndex + 1}`, href: '#' }
+            ]}
           />
           
           {user && profile && (
