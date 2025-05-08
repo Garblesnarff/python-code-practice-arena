@@ -27,6 +27,12 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     message: '', 
     type: 'xp' as 'xp' | 'level' | 'achievement' 
   });
+  const [levelUpNotification, setLevelUpNotification] = useState({
+    visible: false,
+    message: '',
+    prevLevel: 0,
+    newLevel: 0
+  });
   
   const { toast } = useToast();
   const { user, profile } = useAuth();
@@ -71,6 +77,25 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     setTestResults(null);
   }, [problem]);
 
+  // Watch for level changes
+  useEffect(() => {
+    if (profile && profile?.level > 1) {
+      // Store level in local storage to detect level changes
+      const prevLevel = parseInt(localStorage.getItem('userLevel') || '1');
+      
+      if (profile.level > prevLevel) {
+        setLevelUpNotification({
+          visible: true,
+          message: `Congratulations! You reached Level ${profile.level}!`,
+          prevLevel,
+          newLevel: profile.level
+        });
+        
+        localStorage.setItem('userLevel', profile.level.toString());
+      }
+    }
+  }, [profile]);
+
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
   };
@@ -97,7 +122,9 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
       // Check if all tests passed and award XP
       if (results.summary.passed === results.summary.total && user) {
         // Check if problem already completed
-        const isAlreadyCompleted = isProblemCompleted(problem.id);
+        const isAlreadyCompleted = completedProblems.some(
+          p => p.problem_id === problem.id
+        );
         
         if (!isAlreadyCompleted) {
           const prevLevel = profile?.level || 1;
@@ -180,6 +207,10 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
   const handleNotificationClose = () => {
     setXpNotification({...xpNotification, visible: false});
   };
+  
+  const handleLevelUpNotificationClose = () => {
+    setLevelUpNotification({...levelUpNotification, visible: false});
+  };
 
   return {
     code,
@@ -187,11 +218,13 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     isPyodideLoading,
     isExecuting,
     xpNotification,
+    levelUpNotification,
     completedProblems,
     isProblemCompleted: (id: string) => isProblemCompleted(id),
     handleCodeChange,
     handleRunTests,
     handleClearCode,
-    handleNotificationClose
+    handleNotificationClose,
+    handleLevelUpNotificationClose
   };
 };
