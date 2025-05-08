@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { easyProblems } from '@/data/problems/easy-problems';
-import { useToast } from '@/components/ui/use-toast';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import Header from '@/components/problem-page/Header';
 import Footer from '@/components/problem-page/Footer';
@@ -8,38 +8,38 @@ import BreadcrumbNav from '@/components/problem-page/BreadcrumbNav';
 import ProblemNavigation from '@/components/ProblemNavigation';
 import ProblemContainer from '@/components/problem-page/ProblemContainer';
 import { useAuth } from '@/contexts/AuthContext';
-import XPNotificationManager from '@/components/notifications/XPNotificationManager';
+import XPNotification from '@/components/XPNotification';
 import { useNavigate } from 'react-router-dom';
 import { useProblemExecution } from '@/hooks/useProblemExecution';
-import ProfileStatusBar from '@/components/problem-page/ProfileStatusBar';
 import NavigationBar from '@/components/layout/NavigationBar';
+import ProfileStatusBar from '@/components/problem-page/ProfileStatusBar';
 
 const EasyProblems = () => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [levelUpNotification, setLevelUpNotification] = useState({
-    visible: false,
-    message: ''
-  });
-  
-  const { toast } = useToast();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  
   const currentProblem = easyProblems[currentProblemIndex];
-
-  // Use our custom hook for problem execution
+  
+  // Use our refactored hook
   const {
     code,
     testResults,
     isPyodideLoading,
     isExecuting,
     xpNotification,
+    levelUpNotification,
     completedProblems,
     isProblemCompleted,
     handleCodeChange,
     handleRunTests,
     handleClearCode,
-    handleNotificationClose
-  } = useProblemExecution({ problem: currentProblem, difficulty: 'easy' });
+    handleNotificationClose,
+    handleLevelUpNotificationClose
+  } = useProblemExecution({
+    problem: currentProblem,
+    difficulty: 'easy'
+  });
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -47,23 +47,6 @@ const EasyProblems = () => {
       navigate('/auth');
     }
   }, [user, isPyodideLoading, navigate]);
-
-  // Watch for level changes
-  useEffect(() => {
-    if (profile && profile?.level > 1) {
-      // Store level in local storage to detect level changes
-      const prevLevel = parseInt(localStorage.getItem('userLevel') || '1');
-      
-      if (profile.level > prevLevel) {
-        setLevelUpNotification({
-          visible: true,
-          message: `Congratulations! You reached Level ${profile.level}!`
-        });
-        
-        localStorage.setItem('userLevel', profile.level.toString());
-      }
-    }
-  }, [profile]);
 
   const handleSelectProblem = (index: number) => {
     setCurrentProblemIndex(index);
@@ -73,7 +56,6 @@ const EasyProblems = () => {
     return <LoadingOverlay />;
   }
 
-  const completedProblemIds = completedProblems.map(p => p.problem_id);
   const completedCount = completedProblems.filter(p => p.difficulty === 'easy').length;
 
   return (
@@ -103,7 +85,7 @@ const EasyProblems = () => {
             problems={easyProblems}
             currentProblemIndex={currentProblemIndex}
             onSelectProblem={handleSelectProblem}
-            completedProblems={completedProblemIds}
+            completedProblems={completedProblems.map(p => p.problem_id)}
           />
           
           <ProblemContainer 
@@ -121,11 +103,20 @@ const EasyProblems = () => {
       
       <Footer />
 
-      <XPNotificationManager
-        notification={xpNotification}
-        levelUpNotification={levelUpNotification}
-        onNotificationClose={handleNotificationClose}
-        onLevelUpNotificationClose={() => setLevelUpNotification({ ...levelUpNotification, visible: false })}
+      {/* XP Notification */}
+      <XPNotification
+        message={xpNotification.message}
+        type={xpNotification.type}
+        visible={xpNotification.visible}
+        onClose={handleNotificationClose}
+      />
+      
+      {/* Level Up Notification */}
+      <XPNotification
+        message={levelUpNotification.message}
+        type="level"
+        visible={levelUpNotification.visible}
+        onClose={handleLevelUpNotificationClose}
       />
     </div>
   );
