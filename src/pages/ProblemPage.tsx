@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import Layout from '@/components/layout/Layout';
-import { getCourseById, getTopicById, getProblemById } from '@/services/courseService';
+import { getCourseById, getTopicById, getProblemById, updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
 import { Course, Topic } from '@/types/user';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
@@ -15,7 +15,12 @@ import XPNotificationManager from '@/components/notifications/XPNotificationMana
 import ProblemSection from '@/components/problem-page/ProblemSection';
 import CodeEditorSection from '@/components/problem-page/CodeEditorSection';
 import TestResults from '@/components/TestResults';
-import { useProblemExecution } from '@/hooks/useProblemExecution';
+import { usePyodide } from '@/hooks/usePyodide';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useCompletedProblems } from '@/hooks/useCompletedProblems';
+import { useCodeExecution } from '@/hooks/useCodeExecution';
+import { completeProblem } from '@/services/gamificationService';
+import { useProfileData } from '@/hooks/useProfileData';
 
 const ProblemPage = () => {
   const { courseId, topicId, problemId } = useParams<{ 
@@ -23,14 +28,39 @@ const ProblemPage = () => {
     topicId: string;
     problemId: string;
   }>();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { refreshAllProfileData } = useProfileData();
+  const { isPyodideLoading } = usePyodide();
   
   const [course, setCourse] = useState<Course | null>(null);
   const [topic, setTopic] = useState<Topic | null>(null);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const {
+    xpNotification,
+    showXPNotification,
+    handleNotificationClose
+  } = useNotifications();
+  
+  const {
+    completedProblems,
+    refreshCompletedProblems,
+    isProblemCompleted
+  } = useCompletedProblems();
+  
+  // Initialize code execution with null problem
+  const {
+    code,
+    testResults,
+    isExecuting,
+    handleCodeChange,
+    executeCode,
+    handleClearCode,
+    resetCode
+  } = useCodeExecution(problem || {} as Problem);
   
   useEffect(() => {
     if (!user) {
@@ -101,23 +131,72 @@ const ProblemPage = () => {
     loadData();
   }, [courseId, topicId, problemId, user, toast, navigate]);
   
-  // Use our problem execution hook if problem is loaded
-  const {
-    code,
-    testResults,
-    isPyodideLoading,
-    isExecuting,
-    xpNotification,
-    handleCodeChange,
-    handleRunTests,
-    handleClearCode,
-    handleNotificationClose
-  } = useProblemExecution({ 
-    problem: problem!, 
-    difficulty: topic?.title || 'medium',
-    courseId,
-    topicId
-  });
+  // Reset code when problem changes
+  useEffect(() => {
+    if (problem) {
+      resetCode();
+    }
+  }, [problem, resetCode]);
+  
+  const handleRunTests = async () => {
+    if (!problem) return;
+    
+    const results = await executeCode(problem.test_cases);
+    
+    if (!results) return;
+    
+    // Check if all tests passed and award XP
+    if (results.summary.passed === results.summary.total && user) {
+      // Check if problem already completed
+      const isAlreadyCompleted = isProblemCompleted(problem.id);
+      
+      if (!isAlreadyCompleted) {
+        const prevLevel = profile?.level || 1;
+        const { success, xpGained } = await completeProblem(
+          user.id,
+          problem.id,
+          topic?.title || 'medium',
+          courseId,
+          topicId
+        );
+        
+        if (success && xpGained > 0) {
+          // Refresh profile data to update XP and level
+          const updatedProfile = await refreshAllProfileData();
+          
+          // Show XP notification
+          showXPNotification(`+${xpGained} XP gained!`);
+          
+          // Refresh completed problems
+          await refreshCompletedProblems();
+          
+          // Update course progress if courseId provided
+          if (courseId) {
+            await updateCourseProgressAfterProblemCompletion(user.id, courseId, true);
+          }
+          
+          // Check for level up
+          if (updatedProfile && updatedProfile.level > prevLevel) {
+            setTimeout(() => {
+              showXPNotification(`Level up! You're now level ${updatedProfile.level}!`, 'level');
+            }, 4000); // Show after the XP notification disappears
+          }
+        }
+      }
+      
+      toast({
+        title: 'Success!',
+        description: `All ${results.summary.total} tests passed! 🎉`,
+        variant: 'default'
+      });
+    } else {
+      toast({
+        title: 'Tests Completed',
+        description: `Passed ${results.summary.passed} of ${results.summary.total} tests.`,
+        variant: 'default'
+      });
+    }
+  };
   
   if (loading || isPyodideLoading) {
     return <LoadingOverlay />;

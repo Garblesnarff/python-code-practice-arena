@@ -51,7 +51,7 @@ export const useNotifications = () => {
   }, [profile]);
 
   const showXPNotification = (message: string, type: 'xp' | 'level' | 'achievement' = 'xp') => {
-    setXPNotification({
+    setXpNotification({
       visible: true,
       message,
       type
@@ -59,7 +59,7 @@ export const useNotifications = () => {
   };
 
   const handleNotificationClose = () => {
-    setXPNotification({...xpNotification, visible: false});
+    setXpNotification({...xpNotification, visible: false});
   };
   
   const handleLevelUpNotificationClose = () => {

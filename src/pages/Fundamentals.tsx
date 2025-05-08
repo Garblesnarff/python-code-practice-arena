@@ -10,9 +10,13 @@ import ProblemSection from '@/components/fundamentals/ProblemSection';
 import CodeEditorSection from '@/components/fundamentals/CodeEditorSection';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { getCompletedProblems } from '@/services/gamificationService';
+import { completeProblem } from '@/services/gamificationService';
 import XPNotificationManager from '@/components/notifications/XPNotificationManager';
-import { useProblemExecution } from '@/hooks/useProblemExecution';
+import { usePyodide } from '@/hooks/usePyodide';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useCompletedProblems } from '@/hooks/useCompletedProblems';
+import { useCodeExecution } from '@/hooks/useCodeExecution';
+import { useProfileData } from '@/hooks/useProfileData';
 import NavigationBar from '@/components/layout/NavigationBar';
 
 const Fundamentals = () => {
@@ -20,22 +24,31 @@ const Fundamentals = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, profile, loading: authLoading } = useAuth();
+  const { refreshAllProfileData } = useProfileData();
+  const { isPyodideLoading } = usePyodide();
+  
+  const {
+    xpNotification,
+    showXPNotification,
+    handleNotificationClose
+  } = useNotifications();
+  
+  const {
+    completedProblems,
+    refreshCompletedProblems,
+    isProblemCompleted
+  } = useCompletedProblems();
   
   const currentProblem = fundamentalProblems[currentProblemIndex];
   
-  // Use our custom hook for problem execution
   const {
     code,
     testResults,
-    isPyodideLoading,
     isExecuting,
-    xpNotification,
-    completedProblems,
     handleCodeChange,
-    handleRunTests,
-    handleClearCode,
-    handleNotificationClose
-  } = useProblemExecution({ problem: currentProblem, difficulty: 'fundamentals' });
+    executeCode,
+    handleClearCode
+  } = useCodeExecution(currentProblem);
   
   // Check if user is authenticated
   useEffect(() => {
@@ -51,6 +64,57 @@ const Fundamentals = () => {
 
   const handleSelectProblem = (index: number) => {
     setCurrentProblemIndex(index);
+  };
+  
+  const handleRunTests = async () => {
+    const results = await executeCode(currentProblem.test_cases);
+    
+    if (!results) return;
+    
+    // Check if all tests passed and award XP
+    if (results.summary.passed === results.summary.total && user) {
+      // Check if problem already completed
+      const isAlreadyCompleted = isProblemCompleted(currentProblem.id);
+      
+      if (!isAlreadyCompleted) {
+        const prevLevel = profile?.level || 1;
+        const { success, xpGained } = await completeProblem(
+          user.id,
+          currentProblem.id,
+          'fundamentals'
+        );
+        
+        if (success && xpGained > 0) {
+          // Refresh profile data to update XP and level
+          const updatedProfile = await refreshAllProfileData();
+          
+          // Show XP notification
+          showXPNotification(`+${xpGained} XP gained!`);
+          
+          // Refresh completed problems
+          await refreshCompletedProblems();
+          
+          // Check for level up
+          if (updatedProfile && updatedProfile.level > prevLevel) {
+            setTimeout(() => {
+              showXPNotification(`Level up! You're now level ${updatedProfile.level}!`, 'level');
+            }, 4000); // Show after the XP notification disappears
+          }
+        }
+      }
+      
+      toast({
+        title: 'Success!',
+        description: `All ${results.summary.total} tests passed! 🎉`,
+        variant: 'default'
+      });
+    } else {
+      toast({
+        title: 'Tests Completed',
+        description: `Passed ${results.summary.passed} of ${results.summary.total} tests.`,
+        variant: 'default'
+      });
+    }
   };
 
   if (isPyodideLoading || authLoading) {
