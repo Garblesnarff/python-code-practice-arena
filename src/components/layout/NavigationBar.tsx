@@ -1,8 +1,9 @@
 
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSearch } from '@/components/search/SearchProvider';
+import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
 
 const NavigationBar = () => {
   const { openSearch } = useSearch();
@@ -32,12 +33,12 @@ const NavigationBar = () => {
               </Link>
             </nav>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-3">
+            <ThemeSwitcher />
             <Button 
               variant="outline" 
               size="sm" 
               onClick={openSearch}
-              className="mr-3"
             >
               <Search className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Search</span>
@@ -47,6 +48,10 @@ const NavigationBar = () => {
             </Button>
             <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
               Profile
+            </Link>
+            <Link to="/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
+              <Settings className="h-4 w-4" />
+              <span className="sr-only">Settings</span>
             </Link>
           </div>
         </div>
