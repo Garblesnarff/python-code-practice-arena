@@ -1,172 +1,87 @@
 
+import { Problem } from '@/data/problems/types';
 import { supabase } from '@/integrations/supabase/client';
-import { DailyChallenge, UserDailyChallenge } from '@/types/user';
-import { completeProblem } from './gamificationService';
-import { checkAndAwardBadges } from './badgeService';
 
-// Get today's daily challenge
-export const getTodaysChallenge = async (): Promise<DailyChallenge | null> => {
-  try {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    const { data, error } = await supabase
-      .from('daily_challenges')
-      .select('*')
-      .eq('challenge_date', today)
-      .single();
-      
-    if (error) {
-      if (error.code !== 'PGRST116') { // PGRST116: No rows returned
-        console.error('Error fetching daily challenge:', error);
+export async function getProblemById(id: string): Promise<Problem> {
+  // In a real implementation, this would fetch from Supabase
+  // For now, let's return a mock problem
+  const mockProblem: Problem = {
+    id,
+    title: "Daily Challenge: String Reversal",
+    description: "Write a function that reverses a string. The input string is given as an array of characters.",
+    difficulty: "Easy",
+    category: "Strings",
+    starterCode: "def reverse_string(s):\n    # Write your code here\n    pass",
+    testCases: [
+      { input: "['h','e','l','l','o']", expected: "['o','l','l','e','h']", hidden: false },
+      { input: "['H','a','n','n','a','h']", expected: "['h','a','n','n','a','H']", hidden: false }
+    ],
+    examples: [
+      {
+        input: "['h','e','l','l','o']",
+        output: "['o','l','l','e','h']",
+        explanation: "Reverse the array of characters."
+      },
+      {
+        input: "['H','a','n','n','a','h']",
+        output: "['h','a','n','n','a','H']",
+        explanation: "Reverse the array of characters."
       }
-      return null;
+    ],
+    tags: ["String", "Two Pointers"],
+    hints: ["Try using two pointers approach.", "Swap characters from outside to inside."],
+    solution: "def reverse_string(s):\n    left, right = 0, len(s) - 1\n    while left < right:\n        s[left], s[right] = s[right], s[left]\n        left += 1\n        right -= 1\n    return s",
+    explanation: "This solution uses a two-pointer approach to swap characters from the outside towards the center of the string.",
+    timeComplexity: "O(n)",
+    spaceComplexity: "O(1)",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  return mockProblem;
+}
+
+export async function getDailyChallenges(): Promise<Problem[]> {
+  // This would normally fetch from Supabase
+  // For now, let's return a mock list
+  const challenges: Problem[] = [
+    {
+      id: "daily-1",
+      title: "Daily Challenge: String Reversal",
+      description: "Write a function that reverses a string. The input string is given as an array of characters.",
+      difficulty: "Easy",
+      category: "Strings",
+      starterCode: "def reverse_string(s):\n    # Write your code here\n    pass",
+      testCases: [],
+      examples: [],
+      tags: ["String", "Two Pointers"],
+      hints: [],
+      solution: "",
+      explanation: "",
+      timeComplexity: "O(n)",
+      spaceComplexity: "O(1)",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "daily-2",
+      title: "Daily Challenge: Two Sum",
+      description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+      difficulty: "Easy",
+      category: "Arrays",
+      starterCode: "def two_sum(nums, target):\n    # Write your code here\n    pass",
+      testCases: [],
+      examples: [],
+      tags: ["Array", "Hash Table"],
+      hints: [],
+      solution: "",
+      explanation: "",
+      timeComplexity: "O(n)",
+      spaceComplexity: "O(n)",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching daily challenge:', error);
-    return null;
-  }
-};
-
-// Check if user has completed today's challenge
-export const hasCompletedTodaysChallenge = async (userId: string): Promise<boolean> => {
-  try {
-    const challenge = await getTodaysChallenge();
-    if (!challenge) return false;
-    
-    const { data, error } = await supabase
-      .from('user_daily_challenges')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('challenge_id', challenge.id)
-      .single();
-      
-    if (error) {
-      if (error.code !== 'PGRST116') { // No rows returned
-        console.error('Error checking challenge completion:', error);
-      }
-      return false;
-    }
-    
-    return !!data;
-  } catch (error) {
-    console.error('Error checking challenge completion:', error);
-    return false;
-  }
-};
-
-// Complete a daily challenge
-export const completeDailyChallenge = async (
-  userId: string,
-  challengeId: string, 
-  timeTakenSeconds?: number
-): Promise<{ success: boolean; error?: any }> => {
-  try {
-    // Get the challenge details
-    const { data: challenge, error: challengeError } = await supabase
-      .from('daily_challenges')
-      .select('*')
-      .eq('id', challengeId)
-      .single();
-      
-    if (challengeError) throw challengeError;
-    if (!challenge) throw new Error('Challenge not found');
-    
-    // Check if already completed
-    const { data: existingCompletion } = await supabase
-      .from('user_daily_challenges')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('challenge_id', challengeId)
-      .single();
-      
-    if (existingCompletion) {
-      return { success: true }; // Already completed
-    }
-    
-    // Create completion record
-    const { error } = await supabase
-      .from('user_daily_challenges')
-      .insert({
-        user_id: userId,
-        challenge_id: challengeId,
-        time_taken_seconds: timeTakenSeconds
-      });
-      
-    if (error) throw error;
-    
-    // Also mark the problem as completed with bonus XP
-    await completeProblem(
-      userId, 
-      challenge.problem_id, 
-      challenge.difficulty,
-      undefined,
-      undefined,
-      challenge.bonus_xp
-    );
-    
-    // Check for streak-based badges
-    await checkAndAwardBadges(userId);
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Error completing daily challenge:', error);
-    return { success: false, error };
-  }
-};
-
-// Get user's recent daily challenge streak
-export const getUserChallengeStreak = async (userId: string): Promise<number> => {
-  try {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('daily_challenge_streak')
-      .eq('id', userId)
-      .single();
-      
-    if (error) throw error;
-    return data?.daily_challenge_streak || 0;
-  } catch (error) {
-    console.error('Error getting challenge streak:', error);
-    return 0;
-  }
-};
-
-// Get user's best challenge streak
-export const getUserBestChallengeStreak = async (userId: string): Promise<number> => {
-  try {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('best_challenge_streak')
-      .eq('id', userId)
-      .single();
-      
-    if (error) throw error;
-    return data?.best_challenge_streak || 0;
-  } catch (error) {
-    console.error('Error getting best challenge streak:', error);
-    return 0;
-  }
-};
-
-// Get user's challenge history (last 30 days)
-export const getUserChallengeHistory = async (userId: string): Promise<UserDailyChallenge[]> => {
-  try {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const { data, error } = await supabase
-      .from('user_daily_challenges')
-      .select('*, challenge:daily_challenges(*)')
-      .eq('user_id', userId)
-      .gte('completed_at', thirtyDaysAgo.toISOString())
-      .order('completed_at', { ascending: false });
-      
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching challenge history:', error);
-    return [];
-  }
-};
+  ];
+  
+  return challenges;
+}

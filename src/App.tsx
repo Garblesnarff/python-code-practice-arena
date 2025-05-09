@@ -18,13 +18,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, Settings as SettingsIcon, User, BarChart2, Compass } from "lucide-react"
+import { LogOut, SettingsIcon, User, BarChart2, Compass } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import Index from '@/pages/Index';
 import Auth from '@/pages/Auth';
 import Profile from '@/pages/Profile';
-import SettingsPage from '@/pages/Settings';
+import Settings from '@/pages/Settings';
 import AnalyticsDashboard from '@/pages/AnalyticsDashboard';
 import Fundamentals from '@/pages/Fundamentals';
 import EasyProblems from '@/pages/EasyProblems';
@@ -35,7 +35,7 @@ import CourseDashboard from '@/pages/CourseDashboard';
 import TopicDashboard from '@/pages/TopicDashboard';
 import NotFound from '@/pages/NotFound';
 import CommandMenu from './components/layout/CommandMenu';
-import { MainNav } from './components/layout/MainNav';
+import MainNav from './components/layout/MainNav';
 import NavigationBar from '@/components/layout/NavigationBar';
 import ThemeSwitcher from './components/layout/ThemeSwitcher';
 import DailyChallenges from '@/pages/DailyChallenges';
@@ -72,7 +72,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/analytics" element={<AnalyticsDashboard />} />
               <Route path="/fundamentals" element={<Fundamentals />} />
               <Route path="/easy" element={<EasyProblems />} />

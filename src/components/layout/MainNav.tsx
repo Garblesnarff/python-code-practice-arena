@@ -206,14 +206,12 @@ export const MainNav = ({ className }: Props) => {
               <ListItem
                 href="/themes"
                 title="Themes"
-                disabled
               >
                 Integrate beautiful themes to your components.
               </ListItem>
               <ListItem
                 href="/components"
                 title="Components"
-                disabled
               >
                 Beautifully designed components that you can copy and paste into your apps.
               </ListItem>
@@ -239,11 +237,12 @@ const ListItem = React.forwardRef<
     <li>
       <NavigationMenuLink asChild>
         <Link
-          ref={ref}
+          ref={ref as React.Ref<HTMLAnchorElement>}
           className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
             className
           )}
+          to={props.href || "#"} 
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
@@ -256,3 +255,5 @@ const ListItem = React.forwardRef<
   )
 })
 ListItem.displayName = "ListItem"
+
+export default MainNav;

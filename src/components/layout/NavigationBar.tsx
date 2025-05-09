@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/components/theme/ThemeProvider";
-import { MainNav } from "@/components/layout/MainNav";
+import MainNav from "@/components/layout/MainNav";
 import { CommandMenu } from "./CommandMenu";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -21,7 +21,7 @@ import {
   Calendar,
   Compass,
   LogOut,
-  Settings as SettingsIcon,
+  Settings,
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -129,7 +129,7 @@ const NavigationBar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/settings">
-                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Link>
                 </DropdownMenuItem>
