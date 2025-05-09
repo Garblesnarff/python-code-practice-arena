@@ -18,7 +18,7 @@ const DailyChallengePage = () => {
   const [code, setCode] = useState<string>("");
   const [testResults, setTestResults] = useState<any>(null);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
-  const { pyodide, isPyodideLoading } = usePyodide();
+  const { isPyodideLoading } = usePyodide();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,8 +27,8 @@ const DailyChallengePage = () => {
         try {
           const fetchedProblem = await getProblemById(problemId);
           setProblem(fetchedProblem);
-          if (fetchedProblem?.starterCode) {
-            setCode(fetchedProblem.starterCode);
+          if (fetchedProblem?.starter_code) {
+            setCode(fetchedProblem.starter_code);
           }
         } catch (error) {
           console.error("Failed to load daily challenge:", error);
@@ -51,7 +51,7 @@ const DailyChallengePage = () => {
   };
 
   const handleRunTests = async () => {
-    if (!pyodide || !problem) return;
+    if (!problem) return;
     
     setIsExecuting(true);
     // Placeholder for test execution logic
@@ -62,8 +62,8 @@ const DailyChallengePage = () => {
   };
 
   const handleClearCode = () => {
-    if (problem?.starterCode) {
-      setCode(problem.starterCode);
+    if (problem?.starter_code) {
+      setCode(problem.starter_code);
     }
   };
 
@@ -139,9 +139,6 @@ const DailyChallengePage = () => {
                         <div key={index} className="bg-muted p-4 rounded-md">
                           <p><strong>Input:</strong> {example.input}</p>
                           <p><strong>Output:</strong> {example.output}</p>
-                          {example.explanation && (
-                            <p><strong>Explanation:</strong> {example.explanation}</p>
-                          )}
                         </div>
                       ))}
                     </div>

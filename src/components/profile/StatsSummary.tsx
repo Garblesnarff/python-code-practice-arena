@@ -33,9 +33,9 @@ const StatsSummary: React.FC<StatsSummaryProps> = ({
         title="Current XP"
         value={profile.xp}
         change={5}
-        description="Your total experience points"
         prefix=""
         suffix=" XP"
+        description="Your total experience points"
       />
       
       <Card className="overflow-hidden">

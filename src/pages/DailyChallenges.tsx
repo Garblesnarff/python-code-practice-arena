@@ -28,16 +28,20 @@ const DailyChallenges = () => {
   const loadDailyChallenge = async () => {
     setIsLoading(true);
     try {
-      const [todaysChallenge, completed, userStreak, challengeHistory] = await Promise.all([
-        getTodaysChallenge(),
-        user?.id ? hasCompletedTodaysChallenge(user.id) : false,
-        user?.id ? getUserChallengeStreak(user.id) : 0,
-        user?.id ? getUserChallengeHistory(user.id) : []
-      ]);
-
+      if (!user?.id) return;
+      
+      const todaysChallenge = await getTodaysChallenge();
       setChallenge(todaysChallenge);
-      setIsCompleted(completed);
+      
+      if (todaysChallenge) {
+        const completed = await hasCompletedTodaysChallenge(user.id);
+        setIsCompleted(completed);
+      }
+      
+      const userStreak = await getUserChallengeStreak(user.id);
       setStreak(userStreak);
+      
+      const challengeHistory = await getUserChallengeHistory(user.id);
       setHistory(challengeHistory);
     } catch (error) {
       console.error('Error loading daily challenge:', error);

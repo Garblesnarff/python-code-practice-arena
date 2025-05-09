@@ -10,6 +10,9 @@ interface ProgressStatsCardProps {
   change?: number;
   changeLabel?: string;
   changeFormat?: 'number' | 'percent';
+  prefix?: string;
+  suffix?: string;
+  description?: string;
 }
 
 const ProgressStatsCard: React.FC<ProgressStatsCardProps> = ({
@@ -17,7 +20,10 @@ const ProgressStatsCard: React.FC<ProgressStatsCardProps> = ({
   value,
   change = 0,
   changeLabel = '',
-  changeFormat = 'number'
+  changeFormat = 'number',
+  prefix = '',
+  suffix = '',
+  description
 }) => {
   const isPositive = change > 0;
   const isNegative = change < 0;
@@ -33,7 +39,10 @@ const ProgressStatsCard: React.FC<ProgressStatsCardProps> = ({
     <Card>
       <CardContent className="pt-6">
         <div className="text-sm font-medium text-muted-foreground">{title}</div>
-        <div className="text-2xl font-bold mt-2">{value}</div>
+        <div className="text-2xl font-bold mt-2">{prefix}{value}{suffix}</div>
+        {description && (
+          <div className="text-xs text-muted-foreground mt-1">{description}</div>
+        )}
         {change !== 0 && (
           <div className="flex items-center mt-1">
             <span 

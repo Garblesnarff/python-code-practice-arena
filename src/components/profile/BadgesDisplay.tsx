@@ -1,11 +1,11 @@
 
-import React from 'react';
-import { UserBadge } from '@/types/user';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Shield, Star, Zap } from 'lucide-react';
-import { Badge as UIBadge } from '@/components/ui/badge';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { toggleShowcaseBadge } from '@/services/badgeService';
+import { Award, CheckCircle } from 'lucide-react';
+import { UserBadge } from '@/types/user';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
 interface BadgesDisplayProps {
@@ -14,117 +14,101 @@ interface BadgesDisplayProps {
   onBadgeUpdate?: () => void;
 }
 
-const BadgesDisplay: React.FC<BadgesDisplayProps> = ({ 
+const BadgesDisplay: React.FC<BadgesDisplayProps> = ({
   badges,
   canToggleShowcase = false,
   onBadgeUpdate
 }) => {
+  const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
   
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'Skill':
-        return <Zap className="h-4 w-4 text-amber-500" />;
-      case 'Rank':
-        return <Star className="h-4 w-4 text-indigo-500" />;
-      case 'Challenge':
-        return <Shield className="h-4 w-4 text-emerald-500" />;
-      default:
-        return <Shield className="h-4 w-4 text-gray-500" />;
-    }
-  };
-  
-  const handleToggleShowcase = async (userBadgeId: string, currentShowcase: boolean) => {
-    const { success } = await toggleShowcaseBadge(userBadgeId, !currentShowcase);
+  const toggleShowcase = async (badgeId: string, currentShowcaseStatus: boolean | null) => {
+    if (!canToggleShowcase) return;
     
-    if (success) {
+    setUpdating(badgeId);
+    try {
+      const { error } = await supabase
+        .from('user_badges')
+        .update({ showcased: !currentShowcaseStatus })
+        .eq('id', badgeId);
+      
+      if (error) throw error;
+      
       toast({
-        title: currentShowcase ? "Badge removed from showcase" : "Badge added to showcase",
-        duration: 2000
+        title: currentShowcaseStatus 
+          ? "Badge removed from showcase" 
+          : "Badge added to showcase",
+        description: "Your profile has been updated.",
+        duration: 3000,
       });
       
       if (onBadgeUpdate) {
         onBadgeUpdate();
       }
-    } else {
+    } catch (error) {
+      console.error('Error updating badge showcase status:', error);
       toast({
-        title: "Error updating badge showcase",
+        title: "Update Failed",
+        description: "Could not update badge showcase status.",
         variant: "destructive",
-        duration: 2000
       });
+    } finally {
+      setUpdating(null);
     }
   };
-  
+
+  if (badges.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <Award className="h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-medium mb-2">No Badges Yet</h3>
+        <p className="text-muted-foreground text-center max-w-md">
+          Complete challenges, solve problems, and maintain your streak to earn badges!
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Your Badges</CardTitle>
-        <CardDescription>
-          You've earned {badges.length} badge{badges.length !== 1 ? 's' : ''}.
-          {canToggleShowcase && " Select up to 3 badges to showcase on your profile."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {badges.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {badges.map((badge) => (
-              <div 
-                key={badge.id} 
-                className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-primary/10 mb-3">
-                  {badge.badge?.icon ? (
-                    <img 
-                      src={badge.badge.icon} 
-                      alt={badge.badge.name} 
-                      className="w-12 h-12" 
-                    />
-                  ) : (
-                    <div className="w-12 h-12 flex items-center justify-center">
-                      {getCategoryIcon(badge.badge?.category || '')}
-                    </div>
-                  )}
-                </div>
-                
-                <h4 className="font-medium text-center">{badge.badge?.name}</h4>
-                
-                <UIBadge 
-                  variant="outline" 
-                  className="my-1 bg-primary/5"
-                >
-                  {badge.badge?.category}
-                </UIBadge>
-                
-                <p className="text-xs text-center text-muted-foreground mt-1 mb-2">
-                  {badge.badge?.description}
-                </p>
-                
-                <p className="text-xs text-muted-foreground">
-                  Earned: {new Date(badge.earned_at).toLocaleDateString()}
-                </p>
-                
-                {canToggleShowcase && (
-                  <Button
-                    variant={badge.showcased ? "default" : "outline"}
-                    size="sm"
-                    className="mt-2 w-full"
-                    onClick={() => handleToggleShowcase(badge.id, !!badge.showcased)}
-                  >
-                    {badge.showcased ? "Remove from Showcase" : "Add to Showcase"}
-                  </Button>
-                )}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {badges.map((badge) => (
+        <Card key={badge.id} className={badge.showcased ? "border-primary" : ""}>
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-base">{badge.badge?.name || "Unknown Badge"}</CardTitle>
+                <CardDescription className="text-xs">
+                  Earned {new Date(badge.earned_at).toLocaleDateString()}
+                </CardDescription>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <Shield className="h-10 w-10 mx-auto mb-2 text-gray-400" />
-            <p>You haven't earned any badges yet.</p>
-            <p className="text-sm">Complete more challenges to earn badges!</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              {badge.showcased && (
+                <Badge variant="outline" className="bg-primary/10 text-primary">
+                  <CheckCircle className="h-3 w-3 mr-1" /> Showcased
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm mb-4">{badge.badge?.description}</p>
+            {canToggleShowcase && (
+              <Button
+                variant={badge.showcased ? "outline" : "default"}
+                size="sm"
+                className="w-full"
+                disabled={!!updating}
+                onClick={() => toggleShowcase(badge.id, badge.showcased)}
+              >
+                {updating === badge.id 
+                  ? "Updating..." 
+                  : badge.showcased 
+                    ? "Remove from Showcase" 
+                    : "Add to Showcase"}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 };
 
