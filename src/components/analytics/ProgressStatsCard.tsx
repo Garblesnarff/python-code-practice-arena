@@ -1,63 +1,44 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ProgressStatsCardProps {
   title: string;
-  value: number | string;
-  change?: number;
-  changeLabel?: string;
-  changeFormat?: 'number' | 'percent';
+  value: number;
+  change: number;
+  description: string;
   prefix?: string;
   suffix?: string;
-  description?: string;
 }
 
 const ProgressStatsCard: React.FC<ProgressStatsCardProps> = ({
   title,
   value,
-  change = 0,
-  changeLabel = '',
-  changeFormat = 'number',
+  change,
+  description,
   prefix = '',
   suffix = '',
-  description
 }) => {
-  const isPositive = change > 0;
-  const isNegative = change < 0;
+  const formattedValue = `${prefix}${value.toLocaleString()}${suffix}`;
+  const isPositive = change >= 0;
   
-  const formatChange = () => {
-    if (changeFormat === 'percent') {
-      return `${isPositive ? '+' : ''}${change}%`;
-    }
-    return `${isPositive ? '+' : ''}${change}`;
-  };
-
   return (
     <Card>
-      <CardContent className="pt-6">
-        <div className="text-sm font-medium text-muted-foreground">{title}</div>
-        <div className="text-2xl font-bold mt-2">{prefix}{value}{suffix}</div>
-        {description && (
-          <div className="text-xs text-muted-foreground mt-1">{description}</div>
-        )}
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{formattedValue}</div>
+        <p className="text-xs text-muted-foreground">{description}</p>
         {change !== 0 && (
-          <div className="flex items-center mt-1">
-            <span 
-              className={cn(
-                "text-xs font-medium",
-                isPositive ? "text-green-500" : isNegative ? "text-red-500" : "text-muted-foreground"
-              )}
-            >
-              <span className="flex items-center">
-                {isPositive && <ArrowUpIcon className="h-3 w-3 mr-1" />}
-                {isNegative && <ArrowDownIcon className="h-3 w-3 mr-1" />}
-                {formatChange()}
-              </span>
-            </span>
-            {changeLabel && <span className="text-xs text-muted-foreground ml-1">{changeLabel}</span>}
+          <div className={`flex items-center mt-2 text-xs ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+            {isPositive ? (
+              <TrendingUp className="h-3 w-3 mr-1" />
+            ) : (
+              <TrendingDown className="h-3 w-3 mr-1" />
+            )}
+            <span>{isPositive ? '+' : ''}{change}% from last week</span>
           </div>
         )}
       </CardContent>

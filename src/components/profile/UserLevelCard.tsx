@@ -1,68 +1,50 @@
 
 import React from 'react';
+import { UserProfile } from '@/types/user';
 import { Progress } from '@/components/ui/progress';
-import { UserProfile, UserBadge } from '@/types/user';
-import { Badge } from '@/components/ui/badge';
 
 interface UserLevelCardProps {
   profile: UserProfile;
   user: any;
-  showcasedBadges?: UserBadge[];
 }
 
-const UserLevelCard: React.FC<UserLevelCardProps> = ({ profile, user, showcasedBadges = [] }) => {
-  const totalXp = profile.xp;
-  const xpToNextLevel = profile.xp_to_next_level;
-  const currentLevelXp = totalXp - (xpToNextLevel ? totalXp - xpToNextLevel : 0);
-  const nextLevelXp = currentLevelXp + xpToNextLevel;
-  const progressPercentage = (currentLevelXp / nextLevelXp) * 100;
+const UserLevelCard: React.FC<UserLevelCardProps> = ({ profile, user }) => {
+  // Calculate XP progress as a percentage
+  // XP progress is calculated by comparing current XP against what's needed for next level
+  // For example: if next level requires 100 XP total, and user has 75 XP, progress is 75%
+  const totalXpForNextLevel = profile.xp + profile.xp_to_next_level;
+  const progressPercentage = profile.xp_to_next_level > 0 ?
+    (profile.xp / totalXpForNextLevel) * 100 : 100;
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
-      <div className="flex-shrink-0">
-        <div className="h-20 w-20 md:h-24 md:w-24 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-2xl md:text-3xl">
-          {profile.level}
+    <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="relative flex-shrink-0">
+        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+          <span className="text-2xl font-bold text-primary">{profile.level}</span>
         </div>
       </div>
-
-      <div className="flex-grow space-y-2">
-        <h2 className="font-bold text-xl md:text-2xl">{user?.email || profile.username}</h2>
-        
-        <div className="flex flex-wrap items-center gap-2 mb-2">
-          {/* Streak badge */}
-          {profile.streak_days > 0 && (
-            <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100">
-              🔥 {profile.streak_days} day streak
-            </Badge>
-          )}
-          
-          {/* Showcased badges */}
-          {showcasedBadges.map(badge => (
-            <Badge 
-              key={badge.id}
-              variant="outline" 
-              className="bg-primary/10 text-primary"
-            >
-              {badge.badge?.name}
-            </Badge>
-          ))}
+      
+      <div className="flex-grow">
+        <h2 className="text-xl font-semibold mb-1">{profile.username || user.email}</h2>
+        <div className="text-sm text-muted-foreground mb-2">
+          Level {profile.level} • {profile.xp} XP Total
         </div>
         
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="font-medium">Level {profile.level}</span>
-            <span className="font-medium">Level {profile.level + 1}</span>
+        <div className="w-full">
+          <div className="flex justify-between text-xs mb-1">
+            <span>XP: {profile.xp}</span>
+            <span>Next Level: {totalXpForNextLevel}</span>
           </div>
-          <Progress value={progressPercentage} className="h-2" />
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>
-              {currentLevelXp} XP
-            </span>
-            <span>
-              {nextLevelXp} XP
-            </span>
-          </div>
+          <Progress 
+            value={progressPercentage} 
+            className="h-2" 
+          />
         </div>
+      </div>
+      
+      <div className="flex-shrink-0 bg-primary/10 rounded-md p-3 text-center">
+        <div className="text-2xl font-bold">{profile.streak_days}</div>
+        <div className="text-xs font-medium">Day Streak</div>
       </div>
     </div>
   );

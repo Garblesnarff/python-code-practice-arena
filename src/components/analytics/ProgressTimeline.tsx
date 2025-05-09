@@ -1,46 +1,88 @@
 
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent } from '@/components/ui/card';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Legend
+} from 'recharts';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
-const data = [
-  { name: 'Jan', problems: 4 },
-  { name: 'Feb', problems: 8 },
-  { name: 'Mar', problems: 15 },
-  { name: 'Apr', problems: 12 },
-  { name: 'May', problems: 18 },
-  { name: 'Jun', problems: 24 },
-  { name: 'Jul', problems: 30 },
-];
+interface TimelineDataPoint {
+  date: string;
+  problems: number;
+  xp: number;
+}
 
-const ProgressTimeline = () => {
+interface ProgressTimelineProps {
+  data: TimelineDataPoint[];
+  detailed?: boolean;
+}
+
+const ProgressTimeline: React.FC<ProgressTimelineProps> = ({ data, detailed = false }) => {
+  const config = {
+    problems: {
+      label: "Problems Solved",
+      color: "hsl(var(--primary))"
+    },
+    xp: {
+      label: "XP Earned",
+      color: "hsl(var(--secondary) / 80%)"
+    }
+  };
+
   return (
-    <div className="w-full h-80">
+    <ChartContainer className="w-full h-full" config={config}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
+        <LineChart
           data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
         >
-          <defs>
-            <linearGradient id="colorProblems" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-            </linearGradient>
-          </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Area
+          <XAxis 
+            dataKey="date" 
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                ...(detailed ? { year: '2-digit' } : {})
+              });
+            }} 
+          />
+          <YAxis yAxisId="left" />
+          {detailed && <YAxis yAxisId="right" orientation="right" />}
+          <Tooltip content={<ChartTooltipContent />} />
+          <Legend />
+          <Line
+            yAxisId="left"
             type="monotone"
             dataKey="problems"
-            stroke="#8884d8"
-            fillOpacity={1}
-            fill="url(#colorProblems)"
+            name="Problems Solved"
+            stroke="hsl(var(--primary))"
+            activeDot={{ r: 8 }}
           />
-        </AreaChart>
+          {detailed && (
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="xp"
+              name="XP Earned"
+              stroke="hsl(var(--secondary) / 80%)"
+            />
+          )}
+        </LineChart>
       </ResponsiveContainer>
-    </div>
+    </ChartContainer>
   );
 };
 
