@@ -14,10 +14,14 @@ export interface Problem {
   title: string;
   description: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
-  signature_hint: string;
-  examples: Example[];
-  test_cases: TestCase[];
   starter_code?: string;
+  solution_code?: string;
+  test_cases: TestCase[];
+  examples: Example[];
+  hints?: string[];
+  time_complexity?: string;
+  space_complexity?: string;
+  signature_hint?: string;
   solution?: string;
   explanation?: string;
 }

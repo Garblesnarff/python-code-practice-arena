@@ -75,3 +75,28 @@ export interface CourseProgress {
   created_at: string;
   updated_at: string;
 }
+
+export type NodeType = "Problem" | "Concept" | "Quiz" | "Project";
+
+export interface PathNode {
+  id: string;
+  path_id: string;
+  prerequisite_nodes: string[];
+  sequence_number: number;
+  xp_reward: number;
+  created_at: string;
+  updated_at: string;
+  node_type: NodeType;
+  content_id: string | null;
+  title: string;
+  description: string | null;
+}
+
+export interface UserPathNodeProgress {
+  id: string;
+  user_id: string;
+  node_id: string;
+  completed_at: string;
+  attempts: number;
+  node?: PathNode;
+}

@@ -8,7 +8,7 @@ const sampleChallenge: Problem = {
   id: 'daily-01',
   title: 'Sum of Numbers',
   description: 'Write a function that returns the sum of two numbers.',
-  difficulty: 'easy',
+  difficulty: 'Easy',
   hints: [
     'Use the + operator to add numbers',
     'Remember to return the result'
@@ -35,12 +35,12 @@ const sampleChallenge: Problem = {
   ],
   examples: [
     {
-      input: [2, 3],
-      expected_output: 5,
+      input: "2, 3",
+      output: "5",
     },
     {
-      input: [10, 20],
-      expected_output: 30,
+      input: "10, 20",
+      output: "30",
     },
   ],
   time_complexity: 'O(1)',
@@ -58,7 +58,7 @@ export const getDailyChallenges = async (): Promise<Problem> => {
       id: 'daily-01',
       title: 'Sum of Numbers',
       description: 'Write a function that returns the sum of two numbers.',
-      difficulty: 'easy',
+      difficulty: 'Easy',
       hints: [
         'Use the + operator to add numbers',
         'Remember to return the result'
@@ -85,12 +85,12 @@ export const getDailyChallenges = async (): Promise<Problem> => {
       ],
       examples: [
         {
-          input: [2, 3],
-          expected_output: 5,
+          input: "2, 3",
+          output: "5",
         },
         {
-          input: [10, 20],
-          expected_output: 30,
+          input: "10, 20",
+          output: "30",
         },
       ],
       time_complexity: 'O(1)',
@@ -101,4 +101,3 @@ export const getDailyChallenges = async (): Promise<Problem> => {
     throw error;
   }
 };
-
