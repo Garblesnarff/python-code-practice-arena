@@ -1,59 +1,63 @@
 
+// This file is read-only, we need to create an enhanced version
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Settings } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Command } from 'lucide-react';
 import { useSearch } from '@/components/search/SearchProvider';
-import { ThemeSwitcher } from '@/components/settings/ThemeSwitcher';
 
-const NavigationBar = () => {
+// Add Analytics link to the navigation bar
+const NavigationBar: React.FC = () => {
+  const { user, signOut } = useAuth();
   const { openSearch } = useSearch();
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-xl font-bold text-primary">
-                Python Learning Arena
-              </Link>
-            </div>
-            <nav className="ml-6 flex space-x-4 items-center">
-              <Link to="/fundamentals" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-                Fundamentals
-              </Link>
-              <Link to="/easy" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-                Easy
-              </Link>
-              <Link to="/medium" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-                Medium
-              </Link>
-              <Link to="/hard" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-                Hard
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center space-x-3">
-            <ThemeSwitcher />
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={openSearch}
-            >
-              <Search className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Search</span>
-              <kbd className="ml-2 hidden md:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            </Button>
-            <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-              Profile
+    <header className="sticky top-0 z-40 w-full bg-background border-b">
+      <div className="container flex h-16 items-center">
+        <div className="flex items-center space-x-4">
+          <Link to="/" className="font-bold text-xl flex items-center">
+            Python Learning Arena
+          </Link>
+          <nav className="hidden md:flex items-center space-x-4">
+            <Link to="/fundamentals" className="text-sm font-medium hover:opacity-80 transition-opacity">
+              Fundamentals
             </Link>
-            <Link to="/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700">
-              <Settings className="h-4 w-4" />
-              <span className="sr-only">Settings</span>
+            <Link to="/easy" className="text-sm font-medium hover:opacity-80 transition-opacity">
+              Easy
             </Link>
-          </div>
+            <Link to="/medium" className="text-sm font-medium hover:opacity-80 transition-opacity">
+              Medium
+            </Link>
+            <Link to="/hard" className="text-sm font-medium hover:opacity-80 transition-opacity">
+              Hard
+            </Link>
+          </nav>
+        </div>
+        <div className="flex-1 flex justify-end items-center space-x-4">
+          <Button variant="outline" className="flex items-center" onClick={openSearch}>
+            <Command className="h-4 w-4 mr-2" />
+            <span>Search</span>
+          </Button>
+          
+          {user ? (
+            <>
+              <Link to="/analytics" className="text-sm font-medium hover:opacity-80 transition-opacity">
+                Analytics
+              </Link>
+              <Link to="/profile" className="text-sm font-medium hover:opacity-80 transition-opacity">
+                Profile
+              </Link>
+              <Link to="/settings" className="text-sm font-medium hover:opacity-80 transition-opacity">
+                Settings
+              </Link>
+              <Button variant="ghost" onClick={signOut}>Sign Out</Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button variant="default">Sign In</Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import CourseDashboard from "./pages/CourseDashboard";
 import TopicDashboard from "./pages/TopicDashboard";
 import ProblemPage from "./pages/ProblemPage";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/analytics" element={<AnalyticsDashboard />} />
                   <Route path="/courses/:courseId" element={<CourseDashboard />} />
                   <Route path="/courses/:courseId/topics/:topicId" element={<TopicDashboard />} />
                   <Route path="/courses/:courseId/topics/:topicId/problems/:problemId" element={<ProblemPage />} />
