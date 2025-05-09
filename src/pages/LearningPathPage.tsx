@@ -182,7 +182,7 @@ const LearningPathPage = () => {
                   <div key={node.id} className="relative">
                     {/* Vertical line connecting nodes */}
                     {index < nodes.length - 1 && (
-                      <div className={`absolute left-3 top-6 w-0.5 h-8 bg-${isAccessible && isCompleted ? 'primary' : 'gray-200'}`}></div>
+                      <div className={`absolute left-3 top-6 w-0.5 h-8 ${isAccessible && isCompleted ? 'bg-primary' : 'bg-gray-200'}`}></div>
                     )}
                     
                     <div className="flex items-start">
@@ -191,7 +191,7 @@ const LearningPathPage = () => {
                         isCompleted 
                           ? 'bg-primary text-primary-foreground' 
                           : isAccessible 
-            '                ? 'bg-primary/20 text-primary' 
+                            ? 'bg-primary/20 text-primary' 
                             : 'bg-gray-200 text-gray-500'
                       } flex items-center justify-center mr-4`}>
                         {isCompleted 
