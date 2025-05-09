@@ -11,27 +11,39 @@ export type Database = {
     Tables: {
       achievements: {
         Row: {
+          achievement_category: string
           category: string
           description: string
           icon: string | null
           id: string
+          is_hidden: boolean
           name: string
+          requirements: Json | null
+          tier: string
           xp_reward: number
         }
         Insert: {
+          achievement_category?: string
           category: string
           description: string
           icon?: string | null
           id?: string
+          is_hidden?: boolean
           name: string
+          requirements?: Json | null
+          tier?: string
           xp_reward?: number
         }
         Update: {
+          achievement_category?: string
           category?: string
           description?: string
           icon?: string | null
           id?: string
+          is_hidden?: boolean
           name?: string
+          requirements?: Json | null
+          tier?: string
           xp_reward?: number
         }
         Relationships: []
@@ -111,6 +123,45 @@ export type Database = {
           last_active?: string | null
           status?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          is_seasonal: boolean | null
+          name: string
+          requirements: Json | null
+          subcategory: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          is_seasonal?: boolean | null
+          name: string
+          requirements?: Json | null
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          is_seasonal?: boolean | null
+          name?: string
+          requirements?: Json | null
+          subcategory?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -687,6 +738,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_challenges: {
+        Row: {
+          bonus_xp: number
+          challenge_date: string
+          created_at: string
+          difficulty: string
+          id: string
+          problem_id: string
+        }
+        Insert: {
+          bonus_xp?: number
+          challenge_date?: string
+          created_at?: string
+          difficulty: string
+          id?: string
+          problem_id: string
+        }
+        Update: {
+          bonus_xp?: number
+          challenge_date?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          problem_id?: string
+        }
+        Relationships: []
+      }
       dialogue_history: {
         Row: {
           context: Json | null
@@ -872,6 +950,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_paths: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          difficulty: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          prerequisite_paths: string[] | null
+          sequence_number: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          difficulty: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          prerequisite_paths?: string[] | null
+          sequence_number?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          prerequisite_paths?: string[] | null
+          sequence_number?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       locations: {
         Row: {
@@ -1142,6 +1262,56 @@ export type Database = {
           id?: number
         }
         Relationships: []
+      }
+      path_nodes: {
+        Row: {
+          content_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          node_type: string
+          path_id: string
+          prerequisite_nodes: string[] | null
+          sequence_number: number
+          title: string
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          content_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          node_type: string
+          path_id: string
+          prerequisite_nodes?: string[] | null
+          sequence_number?: number
+          title: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          content_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          node_type?: string
+          path_id?: string
+          prerequisite_nodes?: string[] | null
+          sequence_number?: number
+          title?: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "path_nodes_path_id_fkey"
+            columns: ["path_id"]
+            isOneToOne: false
+            referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quest_progress: {
         Row: {
@@ -1709,6 +1879,38 @@ export type Database = {
           },
         ]
       }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          showcased: boolean | null
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          showcased?: boolean | null
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          showcased?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_birds: {
         Row: {
           bird_id: string
@@ -1747,35 +1949,155 @@ export type Database = {
           },
         ]
       }
-      user_profiles: {
+      user_daily_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string
+          id: string
+          time_taken_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string
+          id?: string
+          time_taken_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string
+          id?: string
+          time_taken_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_daily_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_path_node_progress: {
+        Row: {
+          attempts: number | null
+          completed_at: string
+          id: string
+          node_id: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          completed_at?: string
+          id?: string
+          node_id: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          completed_at?: string
+          id?: string
+          node_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_path_node_progress_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "path_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_path_progress: {
         Row: {
           created_at: string
           id: string
+          is_completed: boolean | null
+          last_accessed: string | null
+          nodes_completed: string[] | null
+          path_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          last_accessed?: string | null
+          nodes_completed?: string[] | null
+          path_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          last_accessed?: string | null
+          nodes_completed?: string[] | null
+          path_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_path_progress_path_id_fkey"
+            columns: ["path_id"]
+            isOneToOne: false
+            referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          best_challenge_streak: number | null
+          created_at: string
+          daily_challenge_streak: number | null
+          id: string
           last_active_date: string | null
+          last_daily_challenge_date: string | null
           level: number
           streak_days: number
+          total_badges_earned: number | null
+          total_paths_completed: number | null
           updated_at: string
           username: string | null
           xp: number
           xp_to_next_level: number
         }
         Insert: {
+          best_challenge_streak?: number | null
           created_at?: string
+          daily_challenge_streak?: number | null
           id: string
           last_active_date?: string | null
+          last_daily_challenge_date?: string | null
           level?: number
           streak_days?: number
+          total_badges_earned?: number | null
+          total_paths_completed?: number | null
           updated_at?: string
           username?: string | null
           xp?: number
           xp_to_next_level?: number
         }
         Update: {
+          best_challenge_streak?: number | null
           created_at?: string
+          daily_challenge_streak?: number | null
           id?: string
           last_active_date?: string | null
+          last_daily_challenge_date?: string | null
           level?: number
           streak_days?: number
+          total_badges_earned?: number | null
+          total_paths_completed?: number | null
           updated_at?: string
           username?: string | null
           xp?: number

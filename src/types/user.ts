@@ -9,6 +9,11 @@ export interface UserProfile {
   last_active_date: string | null;
   created_at: string;
   updated_at: string;
+  daily_challenge_streak?: number;
+  best_challenge_streak?: number;
+  last_daily_challenge_date?: string;
+  total_badges_earned?: number;
+  total_paths_completed?: number;
 }
 
 export interface CompletedProblem {
@@ -31,6 +36,10 @@ export interface Achievement {
   icon: string | null;
   category: string;
   xp_reward: number;
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+  achievement_category: 'Problem Solving' | 'Consistency' | 'Speed' | 'Accuracy' | 'Milestone' | 'Specialty' | 'Mastery';
+  is_hidden: boolean;
+  requirements?: any;
 }
 
 export interface UserAchievement {
@@ -74,4 +83,93 @@ export interface CourseProgress {
   is_completed: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string | null;
+  category: 'Skill' | 'Rank' | 'Challenge';
+  subcategory: string | null;
+  requirements?: any;
+  is_seasonal: boolean | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserBadge {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+  showcased: boolean | null;
+  badge?: Badge;
+}
+
+export interface DailyChallenge {
+  id: string;
+  problem_id: string;
+  difficulty: string;
+  bonus_xp: number;
+  challenge_date: string;
+  created_at: string;
+}
+
+export interface UserDailyChallenge {
+  id: string;
+  user_id: string;
+  challenge_id: string;
+  completed_at: string;
+  time_taken_seconds: number | null;
+  challenge?: DailyChallenge;
+}
+
+export interface LearningPath {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  category: string;
+  difficulty: string;
+  sequence_number: number;
+  prerequisite_paths: string[] | null;
+  is_active: boolean | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PathNode {
+  id: string;
+  path_id: string;
+  title: string;
+  description: string | null;
+  node_type: 'Problem' | 'Concept' | 'Quiz' | 'Project';
+  content_id: string | null;
+  prerequisite_nodes: string[] | null;
+  sequence_number: number;
+  xp_reward: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserPathProgress {
+  id: string;
+  user_id: string;
+  path_id: string;
+  nodes_completed: string[] | null;
+  is_completed: boolean | null;
+  last_accessed: string | null;
+  created_at: string;
+  updated_at: string;
+  path?: LearningPath;
+}
+
+export interface UserPathNodeProgress {
+  id: string;
+  user_id: string;
+  node_id: string;
+  completed_at: string;
+  attempts: number | null;
+  node?: PathNode;
 }

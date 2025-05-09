@@ -1,6 +1,8 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { CompletedProblem, Achievement, UserAchievement } from '@/types/user';
 import { useToast } from '@/components/ui/use-toast';
+import { checkAndAwardBadges } from './badgeService';
 
 // Calculate XP based on problem difficulty
 export const calculateXP = (difficulty: string): number => {
@@ -24,10 +26,11 @@ export const completeProblem = async (
   problemId: string,
   difficulty: string,
   courseId?: string,
-  topicId?: string
+  topicId?: string,
+  bonusXp: number = 0
 ): Promise<{ success: boolean; xpGained: number; error?: any }> => {
   try {
-    const xpGained = calculateXP(difficulty);
+    const xpGained = calculateXP(difficulty) + bonusXp;
     
     // Check if problem already completed
     const { data: existingCompletion } = await supabase
@@ -80,6 +83,9 @@ export const completeProblem = async (
     
     // 4. Check for category completion achievements
     await checkForCategoryAchievements(userId);
+    
+    // 5. Check for badges that may be awarded
+    await checkAndAwardBadges(userId);
 
     // Return success
     return { success: true, xpGained };
@@ -126,7 +132,10 @@ export const getAllAchievements = async (): Promise<Achievement[]> => {
   try {
     const { data, error } = await supabase
       .from('achievements')
-      .select('*');
+      .select('*')
+      .eq('is_hidden', false)
+      .order('tier', { ascending: true })
+      .order('name', { ascending: true });
       
     if (error) throw error;
     return data || [];
@@ -192,6 +201,9 @@ export const awardAchievement = async (
     
     if (updateError) throw updateError;
     
+    // Check for badges
+    await checkAndAwardBadges(userId);
+    
     return { success: true, xpGained: achievement.xp_reward };
   } catch (error) {
     console.error('Error awarding achievement:', error);
@@ -251,11 +263,40 @@ const checkForCategoryAchievements = async (userId: string) => {
     const completedMedium = completedCounts['medium'] || 0;
     
     // Check for achievements
+    // Bronze tier achievements
+    if (completedFundamentals >= 3) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Fundamentals Explorer')
+        .eq('tier', 'Bronze')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (completedEasy >= 5) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Easy Problem Solver')
+        .eq('tier', 'Bronze')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    // Silver tier achievements
     if (completedFundamentals >= fundamentalsCount) {
       const { data: achievement } = await supabase
         .from('achievements')
         .select('id')
         .eq('name', 'Fundamentals Master')
+        .eq('tier', 'Silver')
         .single();
       
       if (achievement) {
@@ -267,7 +308,8 @@ const checkForCategoryAchievements = async (userId: string) => {
       const { data: achievement } = await supabase
         .from('achievements')
         .select('id')
-        .eq('name', 'Easy Solver')
+        .eq('name', 'Easy Conqueror')
+        .eq('tier', 'Silver')
         .single();
       
       if (achievement) {
@@ -275,17 +317,88 @@ const checkForCategoryAchievements = async (userId: string) => {
       }
     }
     
-    if (completedMedium >= mediumCount) {
+    if (completedMedium >= 5) {
       const { data: achievement } = await supabase
         .from('achievements')
         .select('id')
         .eq('name', 'Medium Challenger')
+        .eq('tier', 'Silver')
         .single();
       
       if (achievement) {
         await awardAchievement(userId, achievement.id);
       }
     }
+    
+    // Gold tier achievements
+    if (completedMedium >= mediumCount) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Medium Dominator')
+        .eq('tier', 'Gold')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    // Total completion achievements
+    const totalCompleted = completedByDifficulty?.length || 0;
+    
+    if (totalCompleted >= 10) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Rising Star')
+        .eq('tier', 'Bronze')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (totalCompleted >= 25) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Problem Solving Expert')
+        .eq('tier', 'Silver')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (totalCompleted >= 50) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Python Virtuoso')
+        .eq('tier', 'Gold')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (totalCompleted >= 100) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Python Master')
+        .eq('tier', 'Platinum')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
   } catch (error) {
     console.error('Error checking for category achievements:', error);
   }
@@ -338,18 +451,56 @@ export const updateLoginStreak = async (userId: string): Promise<void> => {
     
     if (updateError) throw updateError;
     
-    // Check for streak achievements
-    if (newStreakDays === 3 || newStreakDays === 7 || newStreakDays === 30) {
-      const achievementName = newStreakDays === 3 
-        ? 'Consistency I' 
-        : newStreakDays === 7 
-          ? 'Consistency II' 
-          : 'Consistency III';
-      
+    // Check for consistency achievements
+    if (newStreakDays >= 3) {
       const { data: achievement } = await supabase
         .from('achievements')
         .select('id')
-        .eq('name', achievementName)
+        .eq('name', 'Consistency I')
+        .eq('achievement_category', 'Consistency')
+        .eq('tier', 'Bronze')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (newStreakDays >= 7) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Consistency II')
+        .eq('achievement_category', 'Consistency')
+        .eq('tier', 'Silver')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (newStreakDays >= 30) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Consistency III')
+        .eq('achievement_category', 'Consistency')
+        .eq('tier', 'Gold')
+        .single();
+      
+      if (achievement) {
+        await awardAchievement(userId, achievement.id);
+      }
+    }
+    
+    if (newStreakDays >= 100) {
+      const { data: achievement } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('name', 'Ultimate Consistency')
+        .eq('achievement_category', 'Consistency')
+        .eq('tier', 'Platinum')
         .single();
       
       if (achievement) {
@@ -389,6 +540,56 @@ export const addUserXP = async (
     return { success: true };
   } catch (error) {
     console.error('Error adding XP:', error);
+    return { success: false, error };
+  }
+};
+
+// Check if first attempt at solving a problem
+export const isFirstAttempt = async (userId: string, problemId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('completed_problems')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('problem_id', problemId);
+    
+    if (error) throw error;
+    return !data || data.length === 0;
+  } catch (error) {
+    console.error('Error checking first attempt:', error);
+    return false;
+  }
+};
+
+// Record problem attempt count
+export const recordProblemAttempt = async (
+  userId: string, 
+  problemId: string
+): Promise<{ success: boolean; error?: any }> => {
+  try {
+    // Check if problem already exists
+    const { data: existingProblem } = await supabase
+      .from('completed_problems')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('problem_id', problemId)
+      .single();
+    
+    if (existingProblem) {
+      // Update attempt count
+      const { error } = await supabase
+        .from('completed_problems')
+        .update({ 
+          attempt_count: (existingProblem.attempt_count || 1) + 1 
+        })
+        .eq('id', existingProblem.id);
+      
+      if (error) throw error;
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error recording problem attempt:', error);
     return { success: false, error };
   }
 };
