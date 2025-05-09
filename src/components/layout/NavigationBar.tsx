@@ -1,10 +1,11 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { MainNav } from "@/components/layout/MainNav";
-import { CommandMenu } from "@/components/command";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { CommandMenu } from "./CommandMenu";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -20,7 +21,7 @@ import {
   Calendar,
   Compass,
   LogOut,
-  Settings,
+  Settings as SettingsIcon,
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -128,7 +129,7 @@ const NavigationBar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
+                    <SettingsIcon className="mr-2 h-4 w-4" />
                     Settings
                   </Link>
                 </DropdownMenuItem>

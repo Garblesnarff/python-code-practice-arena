@@ -1,190 +1,100 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import Layout from '@/components/layout/Layout';
+import { ProgressStatsCard } from '@/components/analytics/ProgressStatsCard';
+import { ProgressTimeline } from '@/components/analytics/ProgressTimeline';
+import { LearningPatternChart } from '@/components/analytics/LearningPatternChart';
+import { SkillBreakdownChart } from '@/components/analytics/SkillBreakdownChart';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ProgressStatsCard from '@/components/analytics/ProgressStatsCard';
-import LearningPatternChart from '@/components/analytics/LearningPatternChart';
-import SkillBreakdownChart from '@/components/analytics/SkillBreakdownChart';
-import ProgressTimeline from '@/components/analytics/ProgressTimeline';
-import { useToast } from '@/components/ui/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useProfileData } from '@/hooks/useProfileData';
-import { useAnalyticsData } from '@/hooks/useAnalyticsData';
 
 const AnalyticsDashboard = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { loading: profileLoading } = useProfileData();
-  const { analyticsData, isLoading, error } = useAnalyticsData();
 
-  useEffect(() => {
-    if (!user) {
+  React.useEffect(() => {
+    if (!loading && !user) {
       navigate('/auth');
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to view your analytics dashboard.",
-        variant: "destructive",
-      });
     }
-  }, [user, navigate, toast]);
+  }, [user, loading, navigate]);
 
-  if (!user) {
-    return null; // Will redirect via useEffect
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container max-w-7xl py-10 px-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="h-28 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-28 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-28 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-28 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-      <div className="container mx-auto py-6 space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+      <div className="container max-w-7xl py-10 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Learning Analytics</h1>
+          <p className="text-muted-foreground">
+            Track your progress and improve your learning efficiency
+          </p>
         </div>
-        
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="progress">Progress Details</TabsTrigger>
-            <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
-            <TabsTrigger value="patterns">Learning Patterns</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {isLoading ? (
-                <>
-                  {[...Array(4)].map((_, i) => (
-                    <Card key={i}>
-                      <CardHeader className="pb-2">
-                        <Skeleton className="h-4 w-1/2" />
-                      </CardHeader>
-                      <CardContent>
-                        <Skeleton className="h-10 w-3/4 mb-2" />
-                        <Skeleton className="h-4 w-full" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <ProgressStatsCard 
-                    title="Completed Problems"
-                    value={analyticsData?.totalCompletedProblems || 0}
-                    change={analyticsData?.weeklyCompletionChange || 0}
-                    description="Total problems completed"
-                  />
-                  <ProgressStatsCard 
-                    title="Course Progress"
-                    value={analyticsData?.averageCourseCompletion || 0}
-                    suffix="%"
-                    change={analyticsData?.courseCompletionChange || 0}
-                    description="Average completion across courses"
-                  />
-                  <ProgressStatsCard 
-                    title="XP Earned"
-                    value={analyticsData?.totalXP || 0}
-                    change={analyticsData?.weeklyXPChange || 0}
-                    description="Total experience points"
-                  />
-                  <ProgressStatsCard 
-                    title="Current Streak"
-                    value={analyticsData?.currentStreak || 0}
-                    suffix=" days"
-                    change={0}
-                    description="Consecutive days active"
-                  />
-                </>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Progress Over Time</CardTitle>
-                  <CardDescription>Problem completion trend</CardDescription>
-                </CardHeader>
-                <CardContent className="h-80">
-                  {isLoading ? (
-                    <Skeleton className="h-full w-full" />
-                  ) : (
-                    <ProgressTimeline data={analyticsData?.progressTimeline || []} />
-                  )}
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Skill Distribution</CardTitle>
-                  <CardDescription>Progress across different courses</CardDescription>
-                </CardHeader>
-                <CardContent className="h-80">
-                  {isLoading ? (
-                    <Skeleton className="h-full w-full" />
-                  ) : (
-                    <SkillBreakdownChart data={analyticsData?.skillDistribution || []} />
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="progress" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Detailed Progress Timeline</CardTitle>
-                <CardDescription>Track your learning journey over time</CardDescription>
-              </CardHeader>
-              <CardContent className="h-96">
-                {isLoading ? (
-                  <Skeleton className="h-full w-full" />
-                ) : (
-                  <ProgressTimeline 
-                    data={analyticsData?.progressTimeline || []}
-                    detailed
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="skills" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Skill Level Breakdown</CardTitle>
-                <CardDescription>Detailed analysis of your skills by topic and course</CardDescription>
-              </CardHeader>
-              <CardContent className="h-96">
-                {isLoading ? (
-                  <Skeleton className="h-full w-full" />
-                ) : (
-                  <SkillBreakdownChart 
-                    data={analyticsData?.skillDistribution || []}
-                    detailed
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="patterns" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Learning Pattern Analysis</CardTitle>
-                <CardDescription>Insights into your learning habits and patterns</CardDescription>
-              </CardHeader>
-              <CardContent className="h-96">
-                {isLoading ? (
-                  <Skeleton className="h-full w-full" />
-                ) : (
-                  <LearningPatternChart 
-                    data={analyticsData?.learningPatterns || []}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <ProgressStatsCard
+            title="Problems Solved"
+            value={42}
+            change={8}
+            changeLabel="vs. last week"
+            trend="up"
+          />
+          <ProgressStatsCard
+            title="XP Earned"
+            value={1250}
+            change={320}
+            changeLabel="vs. last week"
+            trend="up"
+          />
+          <ProgressStatsCard
+            title="Completion Rate"
+            value={87}
+            suffix="%"
+            change={3}
+            changeLabel="vs. last week"
+            trend="up"
+          />
+          <ProgressStatsCard
+            title="Avg. Solution Time"
+            value={12.5}
+            suffix="min"
+            change={2.3}
+            changeLabel="vs. last week"
+            trend="down"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="bg-card rounded-lg border shadow-sm p-6">
+            <h3 className="text-lg font-medium mb-4">Progress Timeline</h3>
+            <ProgressTimeline />
+          </div>
+          <div className="bg-card rounded-lg border shadow-sm p-6">
+            <h3 className="text-lg font-medium mb-4">Learning Patterns</h3>
+            <LearningPatternChart />
+          </div>
+        </div>
+
+        <div className="bg-card rounded-lg border shadow-sm p-6">
+          <h3 className="text-lg font-medium mb-4">Skill Breakdown</h3>
+          <SkillBreakdownChart />
+        </div>
       </div>
     </Layout>
   );
