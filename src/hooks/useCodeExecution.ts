@@ -2,17 +2,19 @@
 import { useState } from 'react';
 import { executePythonCode, ExecutionResult } from '@/services/pythonService';
 import { useToast } from '@/components/ui/use-toast';
-import { Problem } from '@/data/problems';
+import { Problem, normalizeProblem } from '@/data/problems/types';
 
 export const useCodeExecution = (problem: Problem) => {
-  const [code, setCode] = useState(problem?.starter_code || '');
+  // Normalize problem to ensure starter_code and initial_code are consistent
+  const normalizedProblem = normalizeProblem(problem);
+  const [code, setCode] = useState(normalizedProblem?.initial_code || '');
   const [testResults, setTestResults] = useState<ExecutionResult | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const { toast } = useToast();
 
   // Reset code and test results when problem changes
   const resetCode = () => {
-    setCode(problem?.starter_code || '');
+    setCode(normalizedProblem?.initial_code || '');
     setTestResults(null);
   };
 

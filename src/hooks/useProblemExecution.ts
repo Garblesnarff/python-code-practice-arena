@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { completeProblem } from '@/services/gamificationService';
-import { Problem } from '@/data/problems';
+import { Problem } from '@/data/problems/types';
 import { useProfileData } from '@/hooks/useProfileData';
 import { updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
 
