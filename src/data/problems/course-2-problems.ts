@@ -487,8 +487,8 @@ export const tuplesAndSetsProblems: Problem[] = [
     title: 'Tuple Basics',
     description: 'Create functions that operate on tuples (accessing, unpacking).',
     difficulty: 'Easy',
-    starter_code: 'def get_tuple_element(tup, index):\n    # Return the element at the given index\n    # Return None if index is out of range\n    pass\n\ndef unpack_tuple(tup):\n    # Unpack the tuple into three variables a, b, and c\n    # If the tuple has fewer than 3 elements, pad with None\n    # If the tuple has more than 3 elements, take only the first 3\n    # Return a new tuple (a, b, c)\n    pass\n\ndef create_tuple_pairs(list1, list2):\n    # Create a list of tuples where each tuple contains corresponding elements\n    # If one list is shorter, ignore extra elements from the longer list\n    # E.g., [1, 2], ["a", "b", "c"] should give [(1, "a"), (2, "b")]\n    pass',
-    solution_code: 'def get_tuple_element(tup, index):\n    try:\n        return tup[index]\n    except (IndexError, TypeError):\n        return None\n\ndef unpack_tuple(tup):\n    a, b, c = tuple(list(tup[:3]) + [None] * (3 - min(3, len(tup))))\n    return (a, b, c)\n\ndef create_tuple_pairs(list1, list2):\n    return [(list1[i], list2[i]) for i in range(min(len(list1), len(list2)))]',
+    starter_code: 'def get_tuple_element(tup, index):\\n    # Return the element at the given index\\n    # Return None if index is out of range\\n    pass\\n\\ndef unpack_tuple(tup):\\n    # Unpack the tuple into three variables a, b, and c\\n    # If the tuple has fewer than 3 elements, pad with None\\n    # If the tuple has more than 3 elements, take only the first 3\\n    # Return a new tuple (a, b, c)\\n    pass\\n\\ndef create_tuple_pairs(list1, list2):\\n    # Create a list of tuples where each tuple contains corresponding elements\\n    # If one list is shorter, ignore extra elements from the longer list\\n    # E.g., [1, 2], [\"a\", \"b\", \"c\"] should give [(1, \"a\"), (2, \"b\")]\\n    pass',
+    solution_code: 'def get_tuple_element(tup, index):\\n    try:\\n        return tup[index]\\n    except (IndexError, TypeError):\\n        return None\\n\\ndef unpack_tuple(tup):\\n    a, b, c = tuple(list(tup[:3]) + [None] * (3 - min(3, len(tup))))\\n    return (a, b, c)\\n\\ndef create_tuple_pairs(list1, list2):\\n    return [(list1[i], list2[i]) for i in range(min(len(list1), len(list2)))]',
     test_cases: [
       {
         input: [(1, 2, 3, 4), 1, [10, 20], ["a", "b"]],
@@ -507,7 +507,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[1], 0, [], ["x", "y"]],
+        input: [[], 0, [], ["x", "y"]], // Fixed: Use an empty array instead of an empty tuple
         expected_output: {
           "element": null,
           "unpack": [null, null, null],
@@ -537,8 +537,8 @@ export const tuplesAndSetsProblems: Problem[] = [
     title: 'Set Basics',
     description: 'Implement functions using set operations (union, intersection, difference).',
     difficulty: 'Easy',
-    starter_code: 'def set_union(set1, set2):\n    # Return the union of two sets (all elements from both sets)\n    pass\n\ndef set_intersection(set1, set2):\n    # Return the intersection of two sets (elements common to both sets)\n    pass\n\ndef set_difference(set1, set2):\n    # Return the difference of set1 and set2 (elements in set1 but not in set2)\n    pass\n\ndef is_subset(set1, set2):\n    # Return True if set1 is a subset of set2 (all elements of set1 are in set2)\n    pass\n\ndef has_duplicates(items):\n    # Return True if the list of items contains any duplicates\n    pass',
-    solution_code: 'def set_union(set1, set2):\n    return set1 | set2\n\ndef set_intersection(set1, set2):\n    return set1 & set2\n\ndef set_difference(set1, set2):\n    return set1 - set2\n\ndef is_subset(set1, set2):\n    return set1 <= set2\n\ndef has_duplicates(items):\n    return len(items) > len(set(items))',
+    starter_code: 'def set_union(set1, set2):\\n    # Return the union of two sets (all elements from both sets)\\n    pass\\n\\ndef set_intersection(set1, set2):\\n    # Return the intersection of two sets (elements common to both sets)\\n    pass\\n\\ndef set_difference(set1, set2):\\n    # Return the difference of set1 and set2 (elements in set1 but not in set2)\\n    pass\\n\\ndef is_subset(set1, set2):\\n    # Return True if set1 is a subset of set2 (all elements of set1 are in set2)\\n    pass\\n\\ndef has_duplicates(items):\\n    # Return True if the list of items contains any duplicates\\n    pass',
+    solution_code: 'def set_union(set1, set2):\\n    return set1 | set2\\n\\ndef set_intersection(set1, set2):\\n    return set1 & set2\\n\\ndef set_difference(set1, set2):\\n    return set1 - set2\\n\\ndef is_subset(set1, set2):\\n    return set1 <= set2\\n\\ndef has_duplicates(items):\\n    return len(items) > len(set(items))',
     test_cases: [
       {
         input: [new Set([1, 2, 3]), new Set([3, 4, 5]), [1, 2, 2, 3, 4]],
@@ -583,8 +583,8 @@ export const tuplesAndSetsProblems: Problem[] = [
     title: 'Set Methods',
     description: 'Create functions demonstrating various set methods (add, remove, discard).',
     difficulty: 'Easy',
-    starter_code: 'def add_elements(set_obj, elements):\n    # Add all elements to the set\n    # Return the modified set\n    pass\n\ndef remove_element_safely(set_obj, element):\n    # Remove the element from the set if it exists\n    # Don\'t raise an error if the element doesn\'t exist\n    # Return the modified set\n    pass\n\ndef pop_element(set_obj):\n    # Remove and return a random element from the set\n    # Return None if the set is empty\n    pass\n\ndef clear_set(set_obj):\n    # Remove all elements from the set\n    # Return the empty set\n    pass',
-    solution_code: 'def add_elements(set_obj, elements):\n    for element in elements:\n        set_obj.add(element)\n    return set_obj\n\ndef remove_element_safely(set_obj, element):\n    set_obj.discard(element)\n    return set_obj\n\ndef pop_element(set_obj):\n    try:\n        return set_obj.pop()\n    except KeyError:\n        return None\n\ndef clear_set(set_obj):\n    set_obj.clear()\n    return set_obj',
+    starter_code: 'def add_elements(set_obj, elements):\\n    # Add all elements to the set\\n    # Return the modified set\\n    pass\\n\\ndef remove_element_safely(set_obj, element):\\n    # Remove the element from the set if it exists\\n    # Don\\'t raise an error if the element doesn\\'t exist\\n    # Return the modified set\\n    pass\\n\\ndef pop_element(set_obj):\\n    # Remove and return a random element from the set\\n    # Return None if the set is empty\\n    pass\\n\\ndef clear_set(set_obj):\\n    # Remove all elements from the set\\n    # Return the empty set\\n    pass',
+    solution_code: 'def add_elements(set_obj, elements):\\n    for element in elements:\\n        set_obj.add(element)\\n    return set_obj\\n\\ndef remove_element_safely(set_obj, element):\\n    set_obj.discard(element)\\n    return set_obj\\n\\ndef pop_element(set_obj):\\n    try:\\n        return set_obj.pop()\\n    except KeyError:\\n        return None\\n\\ndef clear_set(set_obj):\\n    set_obj.clear()\\n    return set_obj',
     test_cases: [
       {
         input: [new Set([1, 2]), [3, 4], 2],

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Course, CourseProgress, Topic } from '@/types/user';
 import { Problem } from '@/data/problems/types';
@@ -400,3 +399,7 @@ export const markCourseAsAccessed = async (userId: string, courseId: string): Pr
     return false;
   }
 };
+
+// Add the missing function - Export the updateCourseLastAccessed function
+// This function will be an alias for markCourseAsAccessed to maintain compatibility
+export const updateCourseLastAccessed = markCourseAsAccessed;
