@@ -6,7 +6,7 @@ export interface UserProfile {
   user_id: string;
   display_name: string;
   username?: string;
-  avatar_url?: string;
+  avatar_url?: string; // Make sure this is defined
   xp: number;
   level: number;
   xp_to_next_level: number;

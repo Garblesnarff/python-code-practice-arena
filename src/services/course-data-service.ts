@@ -1,6 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { Course, Topic } from './course-types';
+import { Course, Topic } from '@/types/course';
 import { Problem } from '@/data/problems/types';
 import { mockCourses, mockTopics } from './mock-course-data';
 import { course1Problems } from '@/data/problems/course-1-problems';
@@ -57,8 +56,8 @@ export const getTopicsByCourseId = async (courseId: string): Promise<Topic[]> =>
     // if (error) throw error;
     // return data;
     
-    // For now, return mock topics
-    return mockTopics[courseId] || [];
+    // For now, filter mock topics by course ID
+    return mockTopics.filter(topic => topic.course_id === courseId);
   } catch (error) {
     console.error(`Error fetching topics for course ${courseId}:`, error);
     return [];
@@ -69,12 +68,9 @@ export const getTopicsByCourseId = async (courseId: string): Promise<Topic[]> =>
 export const getTopicById = async (topicId: string): Promise<Topic | null> => {
   try {
     // In a production app, we would fetch from Supabase
-    // Instead, we'll look through our mock topics
-    for (const courseId in mockTopics) {
-      const topic = mockTopics[courseId].find(t => t.id === topicId);
-      if (topic) return topic;
-    }
-    return null;
+    // Instead, search through our mock topics array
+    const topic = mockTopics.find(t => t.id === topicId);
+    return topic || null;
   } catch (error) {
     console.error(`Error fetching topic ${topicId}:`, error);
     return null;
