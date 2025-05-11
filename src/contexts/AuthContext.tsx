@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user_id: data.id, // Using id as user_id
         display_name: data.username || '', // Use username as display_name
         username: data.username || '',
-        avatar_url: data.avatar_url || '', // Ensure avatar_url is handled correctly
+        avatar_url: '', // Since it doesn't exist in the database, default to empty string
         xp: data.xp,
         level: data.level,
         xp_to_next_level: data.xp_to_next_level,
