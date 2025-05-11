@@ -1,27 +1,22 @@
 
-export interface Example {
-  input: string;
-  output: string;
-}
-
 export interface TestCase {
   input: any;
   expected_output: any;
+  explanation?: string;
+  hidden?: boolean;
 }
 
 export interface Problem {
   id: string;
   title: string;
+  difficulty: string;
   description: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  starter_code?: string;
-  solution_code?: string;
+  initial_code: string;
+  solution_code: string;
   test_cases: TestCase[];
-  examples: Example[];
-  hints?: string[];
-  time_complexity?: string;
-  space_complexity?: string;
-  signature_hint?: string;
-  solution?: string;
-  explanation?: string;
+  category?: string;
+  subcategory?: string;
+  tags?: string[];
+  course_id?: string;
+  topic_id?: string;
 }

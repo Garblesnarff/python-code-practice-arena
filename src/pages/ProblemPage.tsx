@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import BreadcrumbNav from '@/components/problem-page/BreadcrumbNav';
-import { Problem } from '@/data/problems';
+import { Problem } from '@/data/problems/types';
 import XPNotificationManager from '@/components/notifications/XPNotificationManager';
 import ProblemSection from '@/components/problem-page/ProblemSection';
 import CodeEditorSection from '@/components/problem-page/CodeEditorSection';

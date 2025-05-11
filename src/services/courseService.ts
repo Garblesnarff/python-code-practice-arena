@@ -235,6 +235,22 @@ export const getTopicsByCourseId = async (courseId: string): Promise<Topic[]> =>
   }
 };
 
+// Get a single topic by ID
+export const getTopicById = async (topicId: string): Promise<Topic | null> => {
+  try {
+    // In a production app, we would fetch from Supabase
+    // Instead, we'll look through our mock topics
+    for (const courseId in mockTopics) {
+      const topic = mockTopics[courseId].find(t => t.id === topicId);
+      if (topic) return topic;
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error fetching topic ${topicId}:`, error);
+    return null;
+  }
+};
+
 // Get problems for a topic
 export const getProblemsByTopicId = async (topicId: string): Promise<Problem[]> => {
   try {
@@ -245,6 +261,20 @@ export const getProblemsByTopicId = async (topicId: string): Promise<Problem[]> 
   } catch (error) {
     console.error(`Error fetching problems for topic ${topicId}:`, error);
     return [];
+  }
+};
+
+// Get a single problem by ID
+export const getProblemById = async (problemId: string): Promise<Problem | null> => {
+  try {
+    // In a production app, we would fetch from Supabase
+    // Instead, we'll look through our local problems
+    const allProblems = [...course1Problems, ...course2Problems];
+    const problem = allProblems.find(p => p.id === problemId);
+    return problem || null;
+  } catch (error) {
+    console.error(`Error fetching problem ${problemId}:`, error);
+    return null;
   }
 };
 
@@ -315,7 +345,7 @@ const createCourseProgress = async (userId: string, courseId: string): Promise<C
       totalProblems += problems.length;
     }
     
-    const progressData: Partial<CourseProgress> = {
+    const progressData = {
       user_id: userId,
       course_id: courseId,
       problems_completed: 0,
@@ -400,6 +430,6 @@ export const markCourseAsAccessed = async (userId: string, courseId: string): Pr
   }
 };
 
-// Add the missing function - Export the updateCourseLastAccessed function
+// Add the function - Export the updateCourseLastAccessed function
 // This function will be an alias for markCourseAsAccessed to maintain compatibility
 export const updateCourseLastAccessed = markCourseAsAccessed;

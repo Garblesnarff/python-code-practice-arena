@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, BookOpen, CheckCircle2 } from 'lucide-react';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import BreadcrumbNav from '@/components/problem-page/BreadcrumbNav';
-import { Problem } from '@/data/problems';
+import { Problem } from '@/data/problems/types';
 
 const TopicDashboard = () => {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();

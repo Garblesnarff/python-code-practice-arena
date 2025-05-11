@@ -1,493 +1,253 @@
-
+// Import the Problem interface
 import { Problem } from './types';
 
-// Course 1: Python Foundations for Beginners
-
-// Problem Set A: Python Basics
-export const pythonBasicsProblems: Problem[] = [
+// Array of problems for Course 1
+export const course1Problems: Problem[] = [
   {
-    id: 'c1-basics-variables',
+    id: 'variables-assignment',
     title: 'Variables and Assignment',
-    description: 'Create a function that initializes different types of variables (integer, string, float, and boolean) and returns their values as a tuple.',
     difficulty: 'Easy',
-    starter_code: 'def initialize_variables():\n    # Initialize an integer, string, float, and boolean variable\n    # Return them as a tuple in that order\n    pass',
-    solution_code: 'def initialize_variables():\n    num = 42\n    text = "Hello, Python!"\n    decimal = 3.14\n    is_active = True\n    return (num, text, decimal, is_active)',
+    course_id: 'course-1',
+    topic_id: 'topic-basics',
+    description: `
+    # Variables and Assignment
+    
+    In Python, variables are used to store data values. Unlike some other programming languages, 
+    Python has no command for declaring a variable. A variable is created the moment you first 
+    assign a value to it.
+    
+    ## Your Task
+    
+    Complete the \`initialize_variables\` function that creates different types of variables and returns them.
+    
+    The function should:
+    1. Create a string variable named \`name\` with the value "Python"
+    2. Create an integer variable named \`age\` with the value 30
+    3. Create a floating-point variable named \`height\` with the value 1.75
+    4. Create a boolean variable named \`is_programming\` with the value True
+    5. Return all four variables in that order (name, age, height, is_programming)
+    `,
+    initial_code: `def initialize_variables():
+    # Create your variables here
+    
+    
+    # Return all four variables
+    return name, age, height, is_programming
+`,
+    solution_code: `def initialize_variables():
+    # Create your variables here
+    name = "Python"
+    age = 30
+    height = 1.75
+    is_programming = True
+    
+    # Return all four variables
+    return name, age, height, is_programming
+`,
     test_cases: [
       {
         input: [],
-        expected_output: [42, "Hello, Python!", 3.14, True],
+        expected_output: ["Python", 30, 1.75, true]
       }
-    ],
-    examples: [
-      {
-        input: "",
-        output: "(42, 'Hello, Python!', 3.14, True)",
-      }
-    ],
-    hints: [
-      'Use the = operator to assign values to variables',
-      'Python variables don\'t need type declarations',
-      'Return multiple values by separating them with commas inside parentheses'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
+    ]
   },
+  
   {
-    id: 'c1-basics-math',
+    id: 'basic-math-operations',
     title: 'Basic Math Operations',
-    description: 'Write functions to perform addition, subtraction, multiplication, division, and modulus operations.',
     difficulty: 'Easy',
-    starter_code: 'def add(a, b):\n    # Add two numbers\n    pass\n\ndef subtract(a, b):\n    # Subtract b from a\n    pass\n\ndef multiply(a, b):\n    # Multiply two numbers\n    pass\n\ndef divide(a, b):\n    # Divide a by b\n    # Return None if b is zero\n    pass\n\ndef modulus(a, b):\n    # Return the remainder of a divided by b\n    # Return None if b is zero\n    pass',
-    solution_code: 'def add(a, b):\n    return a + b\n\ndef subtract(a, b):\n    return a - b\n\ndef multiply(a, b):\n    return a * b\n\ndef divide(a, b):\n    if b == 0:\n        return None\n    return a / b\n\ndef modulus(a, b):\n    if b == 0:\n        return None\n    return a % b',
-    test_cases: [
-      {
-        input: [10, 5],
-        expected_output: {
-          "add": 15,
-          "subtract": 5,
-          "multiply": 50,
-          "divide": 2.0,
-          "modulus": 0
-        },
-      },
-      {
-        input: [-1, 2],
-        expected_output: {
-          "add": 1,
-          "subtract": -3,
-          "multiply": -2,
-          "divide": -0.5,
-          "modulus": 1
-        },
-      },
-      {
-        input: [7, 0],
-        expected_output: {
-          "add": 7,
-          "subtract": 7,
-          "multiply": 0,
-          "divide": null,
-          "modulus": null
-        },
-      }
-    ],
-    examples: [
-      {
-        input: "10, 5",
-        output: "add: 15, subtract: 5, multiply: 50, divide: 2.0, modulus: 0",
-      }
-    ],
-    hints: [
-      'Use +, -, *, /, and % operators for each operation',
-      'Remember to check for division by zero',
-      'Python operators follow the standard order of operations'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
     course_id: 'course-1',
     topic_id: 'topic-basics',
-  },
-  {
-    id: 'c1-basics-type-conversion',
-    title: 'Type Conversion Functions',
-    description: 'Create functions to convert between string, integer, and float data types.',
-    difficulty: 'Easy',
-    starter_code: 'def to_int(value):\n    # Convert value to integer\n    # Return None if conversion fails\n    pass\n\ndef to_float(value):\n    # Convert value to float\n    # Return None if conversion fails\n    pass\n\ndef to_string(value):\n    # Convert value to string\n    pass',
-    solution_code: 'def to_int(value):\n    try:\n        return int(value)\n    except (ValueError, TypeError):\n        return None\n\ndef to_float(value):\n    try:\n        return float(value)\n    except (ValueError, TypeError):\n        return None\n\ndef to_string(value):\n    return str(value)',
-    test_cases: [
-      {
-        input: ["42", "3.14", 7],
-        expected_output: {
-          "to_int_1": 42,
-          "to_int_2": 3,
-          "to_int_3": 7,
-          "to_float_1": 42.0,
-          "to_float_2": 3.14,
-          "to_float_3": 7.0,
-          "to_string_1": "42",
-          "to_string_2": "3.14",
-          "to_string_3": "7"
-        },
-      },
-      {
-        input: ["hello", "42abc", None],
-        expected_output: {
-          "to_int_1": null,
-          "to_int_2": null,
-          "to_int_3": null,
-          "to_float_1": null,
-          "to_float_2": null,
-          "to_float_3": null,
-          "to_string_1": "hello",
-          "to_string_2": "42abc",
-          "to_string_3": "None"
-        },
-      }
-    ],
-    examples: [
-      {
-        input: '"42", "3.14", 7',
-        output: "to_int('42') = 42, to_float('3.14') = 3.14, to_string(7) = '7'",
-      }
-    ],
-    hints: [
-      'Use int(), float(), and str() functions for conversions',
-      'Handle potential errors with try-except blocks',
-      'str() can convert almost anything to a string'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
-  },
-  {
-    id: 'c1-basics-boolean-logic',
-    title: 'Boolean Logic',
-    description: 'Implement functions using AND, OR, and NOT operations with boolean values.',
-    difficulty: 'Easy',
-    starter_code: 'def logical_and(a, b):\n    # Return True if both a and b are True, False otherwise\n    pass\n\ndef logical_or(a, b):\n    # Return True if either a or b is True, False otherwise\n    pass\n\ndef logical_not(a):\n    # Return the opposite of a\n    pass\n\ndef exclusive_or(a, b):\n    # Return True if exactly one of a or b is True, False otherwise\n    pass',
-    solution_code: 'def logical_and(a, b):\n    return a and b\n\ndef logical_or(a, b):\n    return a or b\n\ndef logical_not(a):\n    return not a\n\ndef exclusive_or(a, b):\n    return (a or b) and not (a and b)',
-    test_cases: [
-      {
-        input: [True, True],
-        expected_output: {
-          "and": True,
-          "or": True,
-          "not_a": False,
-          "xor": False
-        },
-      },
-      {
-        input: [True, False],
-        expected_output: {
-          "and": False,
-          "or": True,
-          "not_a": False,
-          "xor": True
-        },
-      },
-      {
-        input: [False, False],
-        expected_output: {
-          "and": False,
-          "or": False,
-          "not_a": True,
-          "xor": False
-        },
-      }
-    ],
-    examples: [
-      {
-        input: "True, False",
-        output: "and: False, or: True, not_a: False, xor: True",
-      }
-    ],
-    hints: [
-      'Use the and, or, and not operators in Python',
-      'XOR means "exclusive OR" - true when inputs differ',
-      'Python uses keywords instead of symbols for logical operators'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
-  },
-  {
-    id: 'c1-basics-input-output',
-    title: 'Input and Output',
-    description: 'Create a function that formats user input into a specified output format.',
-    difficulty: 'Easy',
-    starter_code: 'def format_name(first_name, last_name):\n    # Return a formatted string: "Last, First"\n    pass\n\ndef format_address(street, city, state, zip_code):\n    # Return a formatted address: "Street, City, State ZIP"\n    pass\n\ndef format_date(year, month, day):\n    # Return a formatted date: "YYYY-MM-DD"\n    # Ensure month and day are two digits with leading zeros if needed\n    pass',
-    solution_code: 'def format_name(first_name, last_name):\n    return f"{last_name}, {first_name}"\n\ndef format_address(street, city, state, zip_code):\n    return f"{street}, {city}, {state} {zip_code}"\n\ndef format_date(year, month, day):\n    return f"{year}-{month:02d}-{day:02d}"',
-    test_cases: [
-      {
-        input: ["John", "Doe", "123 Main St", "Anytown", "CA", "12345", 2023, 5, 9],
-        expected_output: {
-          "name": "Doe, John",
-          "address": "123 Main St, Anytown, CA 12345",
-          "date": "2023-05-09"
-        },
-      },
-      {
-        input: ["Jane", "Smith", "456 Oak Ave", "Somewhere", "NY", "67890", 2023, 11, 23],
-        expected_output: {
-          "name": "Smith, Jane",
-          "address": "456 Oak Ave, Somewhere, NY 67890",
-          "date": "2023-11-23"
-        },
-      },
-      {
-        input: ["Alex", "Johnson", "789 Pine Rd", "Nowhere", "TX", "54321", 2023, 1, 5],
-        expected_output: {
-          "name": "Johnson, Alex",
-          "address": "789 Pine Rd, Nowhere, TX 54321",
-          "date": "2023-01-05"
-        },
-      }
-    ],
-    examples: [
-      {
-        input: '"John", "Doe", "123 Main St", "Anytown", "CA", "12345", 2023, 5, 9',
-        output: 'name: "Doe, John", address: "123 Main St, Anytown, CA 12345", date: "2023-05-09"',
-      }
-    ],
-    hints: [
-      'Use f-strings for formatting (Python 3.6+)',
-      'The :02d format specifier adds leading zeros to single-digit numbers',
-      'String concatenation with + also works but is less readable'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
-  }
-];
+    description: `
+    # Basic Math Operations
+    
+    Python supports various mathematical operations that you can use in your code.
+    The basic operations include addition (+), subtraction (-), multiplication (*), division (/), 
+    and modulus (%).
+    
+    ## Your Task
+    
+    Complete the following functions to perform basic math operations:
+    
+    1. \`add(a, b)\`: Return the sum of a and b
+    2. \`subtract(a, b)\`: Return a minus b
+    3. \`multiply(a, b)\`: Return a multiplied by b
+    4. \`divide(a, b)\`: Return a divided by b
+    5. \`modulus(a, b)\`: Return the remainder when a is divided by b
+    `,
+    initial_code: `def add(a, b):
+    # Return the sum of a and b
+    pass
 
-// Problem Set B: Conditional Statements
-export const conditionalStatementsProblems: Problem[] = [
+def subtract(a, b):
+    # Return a minus b
+    pass
+
+def multiply(a, b):
+    # Return a multiplied by b
+    pass
+
+def divide(a, b):
+    # Return a divided by b
+    pass
+
+def modulus(a, b):
+    # Return the remainder when a is divided by b
+    pass
+`,
+    solution_code: `def add(a, b):
+    # Return the sum of a and b
+    return a + b
+
+def subtract(a, b):
+    # Return a minus b
+    return a - b
+
+def multiply(a, b):
+    # Return a multiplied by b
+    return a * b
+
+def divide(a, b):
+    # Return a divided by b
+    return a / b
+
+def modulus(a, b):
+    # Return the remainder when a is divided by b
+    return a % b
+`,
+    test_cases: [
+      {
+        input: [5, 3],
+        expected_output: {
+          "add": 8,
+          "subtract": 2,
+          "multiply": 15,
+          "divide": 1.6666666666666667,
+          "modulus": 2
+        }
+      },
+      {
+        input: [10, 2],
+        expected_output: {
+          "add": 12,
+          "subtract": 8,
+          "multiply": 20,
+          "divide": 5.0,
+          "modulus": 0
+        }
+      }
+    ]
+  },
   {
-    id: 'c1-conditionals-if',
-    title: 'Simple If Statements',
-    description: 'Create a function that determines if a number is positive, negative, or zero.',
-    difficulty: 'Easy',
-    starter_code: 'def check_number(num):\n    # Return "positive" if num is greater than 0\n    # Return "negative" if num is less than 0\n    # Return "zero" if num is equal to 0\n    pass',
-    solution_code: 'def check_number(num):\n    if num > 0:\n        return "positive"\n    elif num < 0:\n        return "negative"\n    else:\n        return "zero"',
+    id: 'conditional-statements',
+    title: 'Conditional Statements',
+    difficulty: 'Medium',
+    course_id: 'course-1',
+    topic_id: 'topic-conditionals',
+    description: `
+    # Conditional Statements
+    
+    Conditional statements are used to execute different code blocks based on whether a condition is true or false.
+    In Python, you can use if, elif (else if), and else statements to create conditional blocks.
+    
+    ## Your Task
+    
+    Complete the \`check_number\` function that checks if a number is positive, negative, or zero.
+    
+    The function should:
+    1. Return "Positive" if the number is greater than 0
+    2. Return "Negative" if the number is less than 0
+    3. Return "Zero" if the number is equal to 0
+    `,
+    initial_code: `def check_number(number):
+    # Check if the number is positive, negative, or zero
+    pass
+`,
+    solution_code: `def check_number(number):
+    # Check if the number is positive, negative, or zero
+    if number > 0:
+        return "Positive"
+    elif number < 0:
+        return "Negative"
+    else:
+        return "Zero"
+`,
     test_cases: [
       {
         input: [5],
-        expected_output: "positive",
+        expected_output: "Positive"
       },
       {
         input: [-3],
-        expected_output: "negative",
+        expected_output: "Negative"
       },
       {
         input: [0],
-        expected_output: "zero",
+        expected_output: "Zero"
       }
-    ],
-    examples: [
-      {
-        input: "5",
-        output: "positive",
-      },
-      {
-        input: "-3",
-        output: "negative",
-      }
-    ],
-    hints: [
-      'Use if, elif, and else keywords for conditional statements',
-      'The > operator checks if a value is greater than another',
-      'The < operator checks if a value is less than another'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
+    ]
   },
   {
-    id: 'c1-conditionals-if-else',
-    title: 'If-Else Statements',
-    description: 'Implement a function that determines if a year is a leap year.',
-    difficulty: 'Easy',
-    starter_code: 'def is_leap_year(year):\n    # Return True if the year is a leap year, False otherwise\n    # A year is a leap year if:\n    # - It is divisible by 4\n    # - BUT if it\'s divisible by 100, it must also be divisible by 400\n    pass',
-    solution_code: 'def is_leap_year(year):\n    if (year % 400 == 0):\n        return True\n    elif (year % 100 == 0):\n        return False\n    elif (year % 4 == 0):\n        return True\n    else:\n        return False',
-    test_cases: [
-      {
-        input: [2000],
-        expected_output: true,
-      },
-      {
-        input: [1900],
-        expected_output: false,
-      },
-      {
-        input: [2020],
-        expected_output: true,
-      },
-      {
-        input: [2021],
-        expected_output: false,
-      }
-    ],
-    examples: [
-      {
-        input: "2000",
-        output: "True",
-      },
-      {
-        input: "1900",
-        output: "False",
-      }
-    ],
-    hints: [
-      'Use the % (modulo) operator to check divisibility',
-      'A number is divisible by another if the remainder is zero',
-      'Think about the order of conditions to simplify your logic'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
-  },
-  {
-    id: 'c1-conditionals-if-elif-else',
-    title: 'If-Elif-Else Chains',
-    description: 'Create a function that converts number grades to letter grades (A, B, C, D, F).',
-    difficulty: 'Easy',
-    starter_code: 'def get_letter_grade(score):\n    # Convert a numeric score to a letter grade\n    # 90-100: A\n    # 80-89: B\n    # 70-79: C\n    # 60-69: D\n    # 0-59: F\n    # Return "Invalid" for scores outside 0-100\n    pass',
-    solution_code: 'def get_letter_grade(score):\n    if score < 0 or score > 100:\n        return "Invalid"\n    elif score >= 90:\n        return "A"\n    elif score >= 80:\n        return "B"\n    elif score >= 70:\n        return "C"\n    elif score >= 60:\n        return "D"\n    else:\n        return "F"',
-    test_cases: [
-      {
-        input: [95],
-        expected_output: "A",
-      },
-      {
-        input: [85],
-        expected_output: "B",
-      },
-      {
-        input: [75],
-        expected_output: "C",
-      },
-      {
-        input: [65],
-        expected_output: "D",
-      },
-      {
-        input: [55],
-        expected_output: "F",
-      },
-      {
-        input: [-5],
-        expected_output: "Invalid",
-      },
-      {
-        input: [105],
-        expected_output: "Invalid",
-      }
-    ],
-    examples: [
-      {
-        input: "95",
-        output: "A",
-      },
-      {
-        input: "65",
-        output: "D",
-      }
-    ],
-    hints: [
-      'Use a chain of if-elif-else statements',
-      'Check for invalid inputs first',
-      'Order your conditions from highest to lowest grade'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
-  },
-  {
-    id: 'c1-conditionals-nested',
-    title: 'Nested Conditionals',
-    description: 'Implement a function that simulates a simple password system with multiple checks.',
+    id: 'simple-calculator',
+    title: 'Simple Calculator',
     difficulty: 'Medium',
-    starter_code: 'def validate_password(password):\n    # Return "Valid" if password meets all requirements\n    # Return specific error message if not\n    #\n    # Requirements:\n    # - At least 8 characters long\n    # - Contains at least one uppercase letter\n    # - Contains at least one lowercase letter\n    # - Contains at least one digit\n    pass',
-    solution_code: 'def validate_password(password):\n    if len(password) < 8:\n        return "Password must be at least 8 characters long"\n    \n    has_upper = False\n    has_lower = False\n    has_digit = False\n    \n    for char in password:\n        if char.isupper():\n            has_upper = True\n        elif char.islower():\n            has_lower = True\n        elif char.isdigit():\n            has_digit = True\n    \n    if not has_upper:\n        return "Password must contain at least one uppercase letter"\n    if not has_lower:\n        return "Password must contain at least one lowercase letter"\n    if not has_digit:\n        return "Password must contain at least one digit"\n    \n    return "Valid"',
-    test_cases: [
-      {
-        input: ["Password123"],
-        expected_output: "Valid",
-      },
-      {
-        input: ["password123"],
-        expected_output: "Password must contain at least one uppercase letter",
-      },
-      {
-        input: ["PASSWORD123"],
-        expected_output: "Password must contain at least one lowercase letter",
-      },
-      {
-        input: ["Password"],
-        expected_output: "Password must contain at least one digit",
-      },
-      {
-        input: ["Pass1"],
-        expected_output: "Password must be at least 8 characters long",
-      }
-    ],
-    examples: [
-      {
-        input: '"Password123"',
-        output: '"Valid"',
-      },
-      {
-        input: '"Pass1"',
-        output: '"Password must be at least 8 characters long"',
-      }
-    ],
-    hints: [
-      'Check the length requirement first',
-      'Use isupper(), islower(), and isdigit() methods to check character types',
-      'Use boolean flags to track which requirements have been met'
-    ],
-    time_complexity: 'O(n)',
-    space_complexity: 'O(1)',
     course_id: 'course-1',
     topic_id: 'topic-conditionals',
-  },
-  {
-    id: 'c1-conditionals-ternary',
-    title: 'Ternary Operator',
-    description: 'Convert conventional if-else statements to ternary operators.',
-    difficulty: 'Medium',
-    starter_code: 'def is_even(num):\n    # Return "Even" for even numbers and "Odd" for odd numbers\n    # Use the ternary operator (condition_is_true if condition else condition_is_false)\n    pass\n\ndef get_absolute(num):\n    # Return the absolute value of a number\n    # Use the ternary operator\n    pass\n\ndef max_of_two(a, b):\n    # Return the larger of two numbers\n    # Use the ternary operator\n    pass',
-    solution_code: 'def is_even(num):\n    return "Even" if num % 2 == 0 else "Odd"\n\ndef get_absolute(num):\n    return num if num >= 0 else -num\n\ndef max_of_two(a, b):\n    return a if a >= b else b',
+    description: `
+    # Simple Calculator
+    
+    Create a simple calculator that performs basic arithmetic operations based on user input.
+    
+    ## Your Task
+    
+    Complete the \`calculate\` function that takes two numbers and an operation as input and returns the result.
+    
+    The function should:
+    1. Take two numbers (a and b) and an operation (operation) as input
+    2. Perform the specified operation (+, -, *, /) on the numbers
+    3. Return the result of the operation
+    4. If the operation is invalid, return "Invalid operation"
+    `,
+    initial_code: `def calculate(a, b, operation):
+    # Perform the specified operation
+    pass
+`,
+    solution_code: `def calculate(a, b, operation):
+    # Perform the specified operation
+    if operation == '+':
+        return a + b
+    elif operation == '-':
+        return a - b
+    elif operation == '*':
+        return a * b
+    elif operation == '/':
+        if b == 0:
+            return "Division by zero"
+        return a / b
+    else:
+        return "Invalid operation"
+`,
     test_cases: [
       {
-        input: [4, -5, 10, 7],
-        expected_output: {
-          "is_even_1": "Even",
-          "is_even_2": "Odd",
-          "get_absolute_1": 4,
-          "get_absolute_2": 5,
-          "max_of_two": 10
-        },
+        input: [5, 3, '+'],
+        expected_output: 8
       },
       {
-        input: [7, -3, -10, -5],
-        expected_output: {
-          "is_even_1": "Odd",
-          "is_even_2": "Odd",
-          "get_absolute_1": 7,
-          "get_absolute_2": 3,
-          "max_of_two": -5
-        },
-      }
-    ],
-    examples: [
+        input: [10, 2, '-'],
+        expected_output: 8
+      },
       {
-        input: "4, -5, 10, 7",
-        output: 'is_even(4): "Even", get_absolute(-5): 5, max_of_two(10, 7): 10',
+        input: [4, 6, '*'],
+        expected_output: 24
+      },
+      {
+        input: [10, 2, '/'],
+        expected_output: 5.0
+      },
+      {
+        input: [5, 3, '%'],
+        expected_output: "Invalid operation"
       }
-    ],
-    hints: [
-      'The Python ternary operator format is: value_if_true if condition else value_if_false',
-      'For the absolute value, remember to negate negative numbers',
-      'The comparison operators (<, >, <=, >=) work with all numeric types'
-    ],
-    time_complexity: 'O(1)',
-    space_complexity: 'O(1)',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
+    ]
   }
-];
-
-// Combine all Course 1 problems
-export const course1Problems: Problem[] = [
-  ...pythonBasicsProblems,
-  ...conditionalStatementsProblems
 ];
