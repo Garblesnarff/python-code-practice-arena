@@ -507,7 +507,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[1], 0, [], ["x", "y"]], // Fixed: replaced empty tuple with a single-element array
+        input: [[1], 0, [], ["x", "y"]],
         expected_output: {
           "element": null,
           "unpack": [null, null, null],
@@ -541,7 +541,7 @@ export const tuplesAndSetsProblems: Problem[] = [
     solution_code: 'def set_union(set1, set2):\n    return set1 | set2\n\ndef set_intersection(set1, set2):\n    return set1 & set2\n\ndef set_difference(set1, set2):\n    return set1 - set2\n\ndef is_subset(set1, set2):\n    return set1 <= set2\n\ndef has_duplicates(items):\n    return len(items) > len(set(items))',
     test_cases: [
       {
-        input: [{1, 2, 3}, {3, 4, 5}, [1, 2, 2, 3, 4]],
+        input: [new Set([1, 2, 3]), new Set([3, 4, 5]), [1, 2, 2, 3, 4]],
         expected_output: {
           "union": [1, 2, 3, 4, 5],
           "intersection": [3],
@@ -551,7 +551,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [{1, 2}, {1, 2, 3}, ["a", "b", "c"]],
+        input: [new Set([1, 2]), new Set([1, 2, 3]), ["a", "b", "c"]],
         expected_output: {
           "union": [1, 2, 3],
           "intersection": [1, 2],
@@ -587,7 +587,7 @@ export const tuplesAndSetsProblems: Problem[] = [
     solution_code: 'def add_elements(set_obj, elements):\n    for element in elements:\n        set_obj.add(element)\n    return set_obj\n\ndef remove_element_safely(set_obj, element):\n    set_obj.discard(element)\n    return set_obj\n\ndef pop_element(set_obj):\n    try:\n        return set_obj.pop()\n    except KeyError:\n        return None\n\ndef clear_set(set_obj):\n    set_obj.clear()\n    return set_obj',
     test_cases: [
       {
-        input: [{1, 2}, [3, 4], 2],
+        input: [new Set([1, 2]), [3, 4], 2],
         expected_output: {
           "add": [1, 2, 3, 4],
           "remove": [1],
@@ -596,7 +596,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [Set(), [5, 6], 7], // Fixed: properly using Set constructor
+        input: [new Set(), [5, 6], 7],
         expected_output: {
           "add": [5, 6],
           "remove": [],
