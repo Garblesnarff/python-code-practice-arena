@@ -33,6 +33,7 @@ export interface Problem {
   hints?: string[];
   starter_code?: string; // Alias for initial_code
   time_complexity?: string; // Added for course-2-problems.ts
+  space_complexity?: string; // Added for course-2-problems.ts
 }
 
 // Helper function to ensure compatibility between initial_code and starter_code
