@@ -405,17 +405,17 @@ export const dictionaryProblems: Problem[] = [
       {
         input: [[1, 2, 3], {"a": 1, "b": 20, "c": 3}, "v > 2"],
         expected_output: {
-          "squares": {1: 1, 2: 4, 3: 9},
+          "squares": {"1": 1, "2": 4, "3": 9},
           "filter": {"b": 20, "c": 3},
-          "invert": {1: "a", 20: "b", 3: "c"}
+          "invert": {"1": "a", "20": "b", "3": "c"}
         },
       },
       {
         input: [[10, 20], {"x": 0, "y": -1}, "v >= 0"],
         expected_output: {
-          "squares": {10: 100, 20: 400},
+          "squares": {"10": 100, "20": 400},
           "filter": {"x": 0},
-          "invert": {0: "x", -1: "y"}
+          "invert": {"0": "x", "-1": "y"}
         },
       }
     ],
