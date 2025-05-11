@@ -1,3 +1,4 @@
+
 import { Problem } from './types';
 
 // Course 2: Learning Simple Data Structures in Python
@@ -506,7 +507,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [(), 0, [], ["x", "y"]],
+        input: [[1], 0, [], ["x", "y"]], // Fixed: replaced empty tuple with a single-element array
         expected_output: {
           "element": null,
           "unpack": [null, null, null],
@@ -595,7 +596,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [set(), [5, 6], 7],
+        input: [Set(), [5, 6], 7], // Fixed: properly using Set constructor
         expected_output: {
           "add": [5, 6],
           "remove": [],
@@ -630,7 +631,7 @@ export const tuplesAndSetsProblems: Problem[] = [
     solution_code: 'def choose_data_structure(items, needs_ordering, allows_duplicates, needs_mutability):\n    if needs_ordering:\n        if allows_duplicates:\n            return list(items) if needs_mutability else tuple(items)\n        else:\n            # For ordered, unique items we need to preserve order manually since sets don\'t preserve order\n            return list(dict.fromkeys(items)) if needs_mutability else tuple(dict.fromkeys(items))\n    else:\n        if allows_duplicates:\n            return list(items) if needs_mutability else tuple(items)\n        else:\n            return set(items)\n\ndef optimize_for_lookups(items):\n    return set(items)\n\ndef preserve_unique_ordering(items):\n    return list(dict.fromkeys(items))',
     test_cases: [
       {
-        input: [[1, 2, 3, 2, 1], "true", "true", "true"],
+        input: [[1, 2, 3, 2, 1], true, true, true],
         expected_output: {
           "choose": [1, 2, 3, 2, 1],
           "optimize": [1, 2, 3],
@@ -638,7 +639,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[5, 5, 5, 5, 5], "true", "false", "false"],
+        input: [[5, 5, 5, 5, 5], true, false, false],
         expected_output: {
           "choose": [5],
           "optimize": [5],
@@ -646,7 +647,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[3, 1, 4, 1, 5, 9], "false", "false", "true"],
+        input: [[3, 1, 4, 1, 5, 9], false, false, true],
         expected_output: {
           "choose": [1, 3, 4, 5, 9],
           "optimize": [1, 3, 4, 5, 9],
