@@ -1,4 +1,3 @@
-
 import { Problem } from './types';
 
 // Course 2: Learning Simple Data Structures in Python
@@ -404,7 +403,7 @@ export const dictionaryProblems: Problem[] = [
     solution_code: 'def squares_dict(numbers):\n    return {num: num**2 for num in numbers}\n\ndef filter_dict(dictionary, condition):\n    return {k: v for k, v in dictionary.items() if condition(k, v)}\n\ndef invert_dict(dictionary):\n    return {v: k for k, v in dictionary.items()}',
     test_cases: [
       {
-        input: [[1, 2, 3], {"a": 1, "b": 20, "c": 3}, lambda k, v: v > 2],
+        input: [[1, 2, 3], {"a": 1, "b": 20, "c": 3}, "v > 2"],
         expected_output: {
           "squares": {1: 1, 2: 4, 3: 9},
           "filter": {"b": 20, "c": 3},
@@ -412,7 +411,7 @@ export const dictionaryProblems: Problem[] = [
         },
       },
       {
-        input: [[10, 20], {"x": 0, "y": -1}, lambda k, v: v >= 0],
+        input: [[10, 20], {"x": 0, "y": -1}, "v >= 0"],
         expected_output: {
           "squares": {10: 100, 20: 400},
           "filter": {"x": 0},
@@ -422,7 +421,7 @@ export const dictionaryProblems: Problem[] = [
     ],
     examples: [
       {
-        input: '[1, 2, 3], {"a": 1, "b": 20, "c": 3}, lambda k, v: v > 2',
+        input: '[1, 2, 3], {"a": 1, "b": 20, "c": 3}, "v > 2"',
         output: 'squares: {1: 1, 2: 4, 3: 9}, filter: {"b": 20, "c": 3}, invert: {1: "a", 20: "b", 3: "c"}',
       }
     ],
@@ -631,7 +630,7 @@ export const tuplesAndSetsProblems: Problem[] = [
     solution_code: 'def choose_data_structure(items, needs_ordering, allows_duplicates, needs_mutability):\n    if needs_ordering:\n        if allows_duplicates:\n            return list(items) if needs_mutability else tuple(items)\n        else:\n            # For ordered, unique items we need to preserve order manually since sets don\'t preserve order\n            return list(dict.fromkeys(items)) if needs_mutability else tuple(dict.fromkeys(items))\n    else:\n        if allows_duplicates:\n            return list(items) if needs_mutability else tuple(items)\n        else:\n            return set(items)\n\ndef optimize_for_lookups(items):\n    return set(items)\n\ndef preserve_unique_ordering(items):\n    return list(dict.fromkeys(items))',
     test_cases: [
       {
-        input: [[1, 2, 3, 2, 1], true, true, true],
+        input: [[1, 2, 3, 2, 1], "true", "true", "true"],
         expected_output: {
           "choose": [1, 2, 3, 2, 1],
           "optimize": [1, 2, 3],
@@ -639,7 +638,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[5, 5, 5, 5, 5], true, false, false],
+        input: [[5, 5, 5, 5, 5], "true", "false", "false"],
         expected_output: {
           "choose": [5],
           "optimize": [5],
@@ -647,7 +646,7 @@ export const tuplesAndSetsProblems: Problem[] = [
         },
       },
       {
-        input: [[3, 1, 4, 1, 5, 9], false, false, true],
+        input: [[3, 1, 4, 1, 5, 9], "false", "false", "true"],
         expected_output: {
           "choose": [1, 3, 4, 5, 9],
           "optimize": [1, 3, 4, 5, 9],
