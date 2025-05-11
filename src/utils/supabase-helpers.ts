@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 /**
  * Increments a numeric value in a Supabase table
@@ -14,11 +15,12 @@ export const incrementField = async (
 ) => {
   try {
     // First, get the current value
-    const { data, error } = await supabase
-      .from(table)
+    // Use type assertion to handle generic table types
+    const { data, error } = await (supabase
+      .from(table as any)
       .select(field)
       .eq(filterField, filterValue)
-      .single();
+      .single() as any);
     
     if (error) throw error;
     
@@ -27,10 +29,10 @@ export const incrementField = async (
     const newValue = currentValue + increment;
     
     // Update with new value
-    const { error: updateError } = await supabase
-      .from(table)
+    const { error: updateError } = await (supabase
+      .from(table as any)
       .update({ [field]: newValue })
-      .eq(filterField, filterValue);
+      .eq(filterField, filterValue) as any);
     
     if (updateError) throw updateError;
     

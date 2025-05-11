@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { CourseProgress } from '@/types/course';
 import { getTopicsByCourseId, getProblemsByTopicId } from './course-data-service';
