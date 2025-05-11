@@ -3,14 +3,17 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
-import { getCourseById, getTopicsByCourseId, getCourseProgress, updateCourseLastAccessed } from '@/services/courseService';
+import { getCourseById, getTopicsByCourseId, getCourseProgress, markCourseAsAccessed } from '@/services/courseService';
 import { Course, Topic, CourseProgress } from '@/types/user';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, BookOpen, CheckCircle2, Clock } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import Layout from '@/components/layout/Layout';
+import CourseOverview from '@/components/courses/CourseOverview';
+import CourseTopics from '@/components/courses/CourseTopics';
+import CourseProgressWidget from '@/components/courses/CourseProgress';
+import PrerequisitesCourses from '@/components/courses/PrerequisitesCourses';
+import CourseNotFound from '@/components/courses/CourseNotFound';
 
 const CourseDashboard = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -60,7 +63,7 @@ const CourseDashboard = () => {
           setProgress(progressData);
           
           // Update last accessed timestamp
-          await updateCourseLastAccessed(user.id, courseId);
+          await markCourseAsAccessed(user.id, courseId);
         }
       } catch (error) {
         console.error('Error loading course data:', error);
@@ -82,24 +85,8 @@ const CourseDashboard = () => {
   }
   
   if (!course) {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Course Not Found</h2>
-            <p className="mb-4">The course you're looking for doesn't exist.</p>
-            <Button asChild>
-              <Link to="/">Return to Home</Link>
-            </Button>
-          </div>
-        </div>
-      </Layout>
-    );
+    return <CourseNotFound />;
   }
-  
-  const progressPercentage = progress && progress.total_problems > 0
-    ? (progress.problems_completed / progress.total_problems) * 100
-    : 0;
 
   return (
     <Layout>
@@ -114,102 +101,17 @@ const CourseDashboard = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-              <h2 className="text-xl font-semibold mb-4">Course Overview</h2>
-              <p className="mb-6">{course.description}</p>
-              
-              <h3 className="text-lg font-medium mb-3">Learning Objectives</h3>
-              <ul className="list-disc pl-5 space-y-2">
-                {course.learning_objectives?.map((objective, index) => (
-                  <li key={index}>{objective}</li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">Course Topics</h2>
-              
-              {topics.length === 0 ? (
-                <p>No topics available for this course yet.</p>
-              ) : (
-                <div className="space-y-4">
-                  {topics.map((topic) => (
-                    <Card key={topic.id}>
-                      <CardHeader className="pb-2">
-                        <CardTitle>{topic.title}</CardTitle>
-                        {topic.description && (
-                          <CardDescription>{topic.description}</CardDescription>
-                        )}
-                      </CardHeader>
-                      <CardFooter>
-                        <Button asChild className="w-full">
-                          <Link to={`/courses/${courseId}/topics/${topic.id}`}>
-                            Start Learning
-                          </Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
+            <CourseOverview course={course} />
+            <CourseTopics courseId={courseId || ''} topics={topics} />
           </div>
           
           <div className="lg:col-span-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-lg font-semibold mb-4">Your Progress</h2>
-              <div className="mb-6">
-                <div className="flex justify-between mb-2 text-sm">
-                  <span>{progress?.problems_completed || 0} completed</span>
-                  <span>{progress?.total_problems || 0} total</span>
-                </div>
-                <Progress value={progressPercentage} />
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center text-sm">
-                  <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
-                  <span>
-                    {progress?.problems_completed || 0} / {progress?.total_problems || 0} exercises completed
-                  </span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
-                  <span>
-                    {progress?.is_completed ? 'Course completed' : 'Course in progress'}
-                  </span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <Clock className="h-4 w-4 mr-2 text-orange-500" />
-                  <span>
-                    Last accessed: {progress?.last_accessed_timestamp 
-                      ? new Date(progress.last_accessed_timestamp).toLocaleDateString() 
-                      : 'Never'}
-                  </span>
-                </div>
-              </div>
-              
-              {topics.length > 0 && (
-                <Button className="w-full mt-6" asChild>
-                  <Link to={`/courses/${courseId}/topics/${topics[0].id}`}>
-                    {progress?.problems_completed ? 'Continue Learning' : 'Start Course'}
-                  </Link>
-                </Button>
-              )}
-            </div>
-            
-            {course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 className="text-lg font-semibold mb-2">Prerequisites</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  We recommend completing these courses first:
-                </p>
-                <div className="space-y-2">
-                  {/* Placeholder for prerequisite courses - in real implementation we'd fetch them */}
-                  <p className="text-sm">This feature will be implemented soon.</p>
-                </div>
-              </div>
-            )}
+            <CourseProgressWidget 
+              courseId={courseId || ''} 
+              progress={progress} 
+              topics={topics}
+            />
+            <PrerequisitesCourses course={course} />
           </div>
         </div>
       </div>
