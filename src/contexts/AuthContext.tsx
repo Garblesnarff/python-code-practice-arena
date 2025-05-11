@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: data.id,
         user_id: data.id, // Using id as user_id
         display_name: data.username || '', // Use username as display_name
-        username: data.username,
+        username: data.username || '',
         avatar_url: data.avatar_url || '', // Set a default empty string if null
         xp: data.xp,
         level: data.level,

@@ -1,5 +1,4 @@
-
-import { Course, Topic, MockData } from './course-types';
+import { Course, Topic, MockData } from '@/types/course';
 
 // Mock course data for demonstration purposes
 export const mockCourses: Course[] = [
@@ -120,58 +119,56 @@ export const mockCourses: Course[] = [
   },
 ];
 
-// Mock topics data
-export const mockTopics: Record<string, Topic[]> = {
-  'course-1': [
-    {
-      id: 'topic-basics',
-      title: 'Python Basics',
-      description: 'Introduction to Python variables, data types, and basic operations',
-      course_id: 'course-1',
-      sequence_number: 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: 'topic-conditionals',
-      title: 'Conditional Statements',
-      description: 'Working with if, else, and elif statements in Python',
-      course_id: 'course-1',
-      sequence_number: 2,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ],
-  'course-2': [
-    {
-      id: 'topic-lists',
-      title: 'Lists',
-      description: 'Working with Python lists and list operations',
-      course_id: 'course-2',
-      sequence_number: 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: 'topic-dictionaries',
-      title: 'Dictionaries',
-      description: 'Using Python dictionaries for key-value data',
-      course_id: 'course-2',
-      sequence_number: 2,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: 'topic-tuples-sets',
-      title: 'Tuples and Sets',
-      description: 'Working with Python tuples and sets',
-      course_id: 'course-2',
-      sequence_number: 3,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ]
-};
+// Mock topics data - convert from Record to flat array to match expected type
+export const mockTopics: Topic[] = [
+  // Topics for course-1
+  {
+    id: 'topic-basics',
+    title: 'Python Basics',
+    description: 'Introduction to Python variables, data types, and basic operations',
+    course_id: 'course-1',
+    sequence_number: 1,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: 'topic-conditionals',
+    title: 'Conditional Statements',
+    description: 'Working with if, else, and elif statements in Python',
+    course_id: 'course-1',
+    sequence_number: 2,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  // Topics for course-2
+  {
+    id: 'topic-lists',
+    title: 'Lists',
+    description: 'Working with Python lists and list operations',
+    course_id: 'course-2',
+    sequence_number: 1,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: 'topic-dictionaries',
+    title: 'Dictionaries',
+    description: 'Using Python dictionaries for key-value data',
+    course_id: 'course-2',
+    sequence_number: 2,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: 'topic-tuples-sets',
+    title: 'Tuples and Sets',
+    description: 'Working with Python tuples and sets',
+    course_id: 'course-2',
+    sequence_number: 3,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
 
 export const getMockData = (): MockData => {
   return {
