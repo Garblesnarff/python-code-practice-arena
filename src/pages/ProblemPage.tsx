@@ -1,26 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/use-toast';
-import Layout from '@/components/layout/Layout';
-import { getCourseById, getTopicById, getProblemById, updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
-import { Course, Topic } from '@/types/user';
-import { Button } from '@/components/ui/button';
+import React, { useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import Layout from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import BreadcrumbNav from '@/components/problem-page/BreadcrumbNav';
-import { Problem } from '@/data/problems/types';
+import ProblemContainer from '@/components/problem-page/ProblemContainer';
+import ProblemNotFound from '@/components/problem-page/ProblemNotFound';
 import XPNotificationManager from '@/components/notifications/XPNotificationManager';
-import ProblemSection from '@/components/problem-page/ProblemSection';
-import CodeEditorSection from '@/components/problem-page/CodeEditorSection';
-import TestResults from '@/components/TestResults';
 import { usePyodide } from '@/hooks/usePyodide';
-import { useNotifications } from '@/hooks/useNotifications';
-import { useCompletedProblems } from '@/hooks/useCompletedProblems';
-import { useCodeExecution } from '@/hooks/useCodeExecution';
-import { completeProblem } from '@/services/gamificationService';
-import { useProfileData } from '@/hooks/useProfileData';
+import { useProblemData } from '@/hooks/useProblemData';
+import { useProblemExecution } from '@/hooks/useProblemExecution';
 
 const ProblemPage = () => {
   const { courseId, topicId, problemId } = useParams<{ 
@@ -28,194 +19,47 @@ const ProblemPage = () => {
     topicId: string;
     problemId: string;
   }>();
-  const { user, profile } = useAuth();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const { refreshAllProfileData } = useProfileData();
+  
   const { isPyodideLoading } = usePyodide();
   
-  const [course, setCourse] = useState<Course | null>(null);
-  const [topic, setTopic] = useState<Topic | null>(null);
-  const [problem, setProblem] = useState<Problem | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Load problem data
+  const { course, topic, problem, loading } = useProblemData({ 
+    courseId, 
+    topicId, 
+    problemId 
+  });
   
-  const {
-    xpNotification,
-    showXPNotification,
-    handleNotificationClose
-  } = useNotifications();
-  
-  const {
-    completedProblems,
-    refreshCompletedProblems,
-    isProblemCompleted
-  } = useCompletedProblems();
-  
-  // Initialize code execution with null problem
+  // Handle code execution and XP
   const {
     code,
     testResults,
     isExecuting,
+    xpNotification,
+    levelUpNotification,
+    isProblemCompleted,
     handleCodeChange,
-    executeCode,
+    handleRunTests,
     handleClearCode,
-    resetCode
-  } = useCodeExecution(problem || {} as Problem);
-  
-  useEffect(() => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to access course content.",
-        variant: "default"
-      });
-      navigate('/auth');
-      return;
-    }
-    
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        if (!courseId || !topicId || !problemId) return;
-        
-        // Load course data
-        const courseData = await getCourseById(courseId);
-        if (!courseData) {
-          toast({
-            title: "Course Not Found",
-            description: "The requested course could not be found.",
-            variant: "destructive"
-          });
-          navigate('/');
-          return;
-        }
-        setCourse(courseData);
-        
-        // Load topic data
-        const topicData = await getTopicById(topicId);
-        if (!topicData) {
-          toast({
-            title: "Topic Not Found",
-            description: "The requested topic could not be found.",
-            variant: "destructive"
-          });
-          navigate(`/courses/${courseId}`);
-          return;
-        }
-        setTopic(topicData);
-        
-        // Load problem data
-        const problemData = await getProblemById(problemId);
-        if (!problemData) {
-          toast({
-            title: "Problem Not Found",
-            description: "The requested problem could not be found.",
-            variant: "destructive"
-          });
-          navigate(`/courses/${courseId}/topics/${topicId}`);
-          return;
-        }
-        setProblem(problemData);
-      } catch (error) {
-        console.error('Error loading problem data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load problem data.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadData();
-  }, [courseId, topicId, problemId, user, toast, navigate]);
+    handleNotificationClose,
+    handleLevelUpNotificationClose
+  } = useProblemExecution({ 
+    problem: problem || {}, 
+    difficulty: topic?.title || 'medium',
+    courseId,
+    topicId
+  });
   
   // Reset code when problem changes
   useEffect(() => {
-    if (problem) {
-      resetCode();
-    }
-  }, [problem, resetCode]);
-  
-  const handleRunTests = async () => {
-    if (!problem) return;
-    
-    const results = await executeCode(problem.test_cases);
-    
-    if (!results) return;
-    
-    // Check if all tests passed and award XP
-    if (results.summary.passed === results.summary.total && user) {
-      // Check if problem already completed
-      const isAlreadyCompleted = isProblemCompleted(problem.id);
-      
-      if (!isAlreadyCompleted) {
-        const prevLevel = profile?.level || 1;
-        const { success, xpGained } = await completeProblem(
-          user.id,
-          problem.id,
-          topic?.title || 'medium',
-          courseId,
-          topicId
-        );
-        
-        if (success && xpGained > 0) {
-          // Refresh profile data to update XP and level
-          const updatedProfile = await refreshAllProfileData();
-          
-          // Show XP notification
-          showXPNotification(`+${xpGained} XP gained!`);
-          
-          // Refresh completed problems
-          await refreshCompletedProblems();
-          
-          // Update course progress if courseId provided
-          if (courseId) {
-            await updateCourseProgressAfterProblemCompletion(user.id, courseId, true);
-          }
-          
-          // Check for level up
-          if (updatedProfile && updatedProfile.level > prevLevel) {
-            setTimeout(() => {
-              showXPNotification(`Level up! You're now level ${updatedProfile.level}!`, 'level');
-            }, 4000); // Show after the XP notification disappears
-          }
-        }
-      }
-      
-      toast({
-        title: 'Success!',
-        description: `All ${results.summary.total} tests passed! 🎉`,
-        variant: 'default'
-      });
-    } else {
-      toast({
-        title: 'Tests Completed',
-        description: `Passed ${results.summary.passed} of ${results.summary.total} tests.`,
-        variant: 'default'
-      });
-    }
-  };
+    // No additional logic needed here as useProblemExecution handles this
+  }, [problem]);
   
   if (loading || isPyodideLoading) {
     return <LoadingOverlay />;
   }
   
   if (!course || !topic || !problem) {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Problem Not Found</h2>
-            <p className="mb-4">The problem you're looking for doesn't exist.</p>
-            <Button asChild>
-              <Link to="/">Return to Home</Link>
-            </Button>
-          </div>
-        </div>
-      </Layout>
-    );
+    return <ProblemNotFound />;
   }
 
   return (
@@ -242,32 +86,21 @@ const ProblemPage = () => {
         {/* XP Notification */}
         <XPNotificationManager 
           notification={xpNotification}
+          levelUpNotification={levelUpNotification}
           onNotificationClose={handleNotificationClose}
+          onLevelUpNotificationClose={handleLevelUpNotificationClose}
         />
         
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-14rem)]">
-          <ProblemSection 
-            problem={problem} 
-            className="lg:col-span-2" 
-          />
-          
-          <div className="flex flex-col gap-6 lg:col-span-3">
-            <CodeEditorSection 
-              code={code}
-              onChange={handleCodeChange}
-              onRun={handleRunTests}
-              onClear={handleClearCode}
-              isExecuting={isExecuting}
-            />
-            
-            <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden flex flex-col h-1/2">
-              <h2 className="text-lg font-semibold p-4 border-b">Results</h2>
-              <div className="flex-1 overflow-hidden">
-                <TestResults results={testResults} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProblemContainer 
+          problem={problem}
+          code={code}
+          testResults={testResults}
+          isExecuting={isExecuting}
+          onCodeChange={handleCodeChange}
+          onRunTests={handleRunTests}
+          onClearCode={handleClearCode}
+          isCompleted={isProblemCompleted(problem.id)}
+        />
       </div>
     </Layout>
   );

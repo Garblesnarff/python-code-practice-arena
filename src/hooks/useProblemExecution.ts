@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { completeProblem } from '@/services/gamificationService';
-import { Problem } from '@/data/problems/types';
+import { Problem, normalizeProblem } from '@/data/problems/types';
 import { useProfileData } from '@/hooks/useProfileData';
 import { updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
 
@@ -20,6 +20,7 @@ interface UseProblemExecutionProps {
 }
 
 export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: UseProblemExecutionProps) => {
+  const normalizedProblem = normalizeProblem(problem);
   const { isPyodideLoading } = usePyodide();
   const { toast } = useToast();
   const { user, profile } = useAuth();
@@ -47,15 +48,15 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     executeCode,
     handleClearCode,
     resetCode
-  } = useCodeExecution(problem);
+  } = useCodeExecution(normalizedProblem);
 
   // Reset code when problem changes
   useEffect(() => {
     resetCode();
-  }, [problem]);
+  }, [normalizedProblem.id]);
 
   const handleRunTests = async () => {
-    const results = await executeCode(problem.test_cases);
+    const results = await executeCode(normalizedProblem.test_cases);
     
     if (!results) return;
     
@@ -63,14 +64,14 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     if (results.summary.passed === results.summary.total && user) {
       // Check if problem already completed
       const isAlreadyCompleted = completedProblems.some(
-        p => p.problem_id === problem.id
+        p => p.problem_id === normalizedProblem.id
       );
       
       if (!isAlreadyCompleted) {
         const prevLevel = profile?.level || 1;
         const { success, xpGained } = await completeProblem(
           user.id,
-          problem.id,
+          normalizedProblem.id,
           difficulty,
           courseId,
           topicId

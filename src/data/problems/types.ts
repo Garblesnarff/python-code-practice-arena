@@ -32,13 +32,29 @@ export interface Problem {
   solution?: string;
   hints?: string[];
   starter_code?: string; // Alias for initial_code
+  time_complexity?: string; // Added for course-2-problems.ts
 }
 
 // Helper function to ensure compatibility between initial_code and starter_code
 export const normalizeProblem = (problem: Problem): Problem => {
-  return {
-    ...problem,
-    starter_code: problem.starter_code || problem.initial_code,
-    initial_code: problem.initial_code || problem.starter_code
-  };
+  // Create a normalized copy of the problem
+  const normalized: Problem = { ...problem };
+
+  // Handle starter_code <-> initial_code mapping
+  if (problem.starter_code && !problem.initial_code) {
+    normalized.initial_code = problem.starter_code;
+  }
+  if (problem.initial_code && !problem.starter_code) {
+    normalized.starter_code = problem.initial_code;
+  }
+
+  // Handle solution <-> solution_code mapping
+  if (problem.solution && !problem.solution_code) {
+    normalized.solution_code = problem.solution;
+  }
+  if (problem.solution_code && !problem.solution) {
+    normalized.solution = problem.solution_code;
+  }
+
+  return normalized;
 };
