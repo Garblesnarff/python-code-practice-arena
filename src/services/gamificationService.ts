@@ -130,7 +130,22 @@ export const getUserAchievements = async (userId: string): Promise<UserAchieveme
       .eq('user_id', userId);
       
     if (error) throw error;
-    return data || [];
+    
+    // Transform requirements to proper type
+    const achievements: UserAchievement[] = data.map(item => ({
+      id: item.id,
+      user_id: item.user_id,
+      achievement_id: item.achievement_id,
+      unlocked_at: item.unlocked_at,
+      achievement: item.achievement ? {
+        ...item.achievement,
+        requirements: typeof item.achievement.requirements === 'string' 
+          ? JSON.parse(item.achievement.requirements) 
+          : item.achievement.requirements
+      } : undefined
+    }));
+    
+    return achievements;
   } catch (error) {
     console.error('Error fetching user achievements:', error);
     return [];
@@ -145,7 +160,16 @@ export const getAllAchievements = async (): Promise<Achievement[]> => {
       .select('*');
       
     if (error) throw error;
-    return data || [];
+    
+    // Transform requirements to proper type
+    const achievements: Achievement[] = data.map(item => ({
+      ...item,
+      requirements: typeof item.requirements === 'string' 
+        ? JSON.parse(item.requirements) 
+        : item.requirements
+    }));
+    
+    return achievements;
   } catch (error) {
     console.error('Error fetching achievements:', error);
     return [];

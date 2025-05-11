@@ -55,7 +55,7 @@ export interface XPHistory {
   created_at: string;
 }
 
-// Add Achievement related types
+// Achievement related types
 export interface Achievement {
   id: string;
   name: string;

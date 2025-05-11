@@ -1,7 +1,7 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { getUserPathProgress } from './user-progress-service';
 import { PathNode, UserPathNodeProgress, NodeType } from '@/types/user';
+import { getUserPathProgress } from './user-progress-service';
+import { incrementField } from '@/utils/supabase-helpers';
 
 // Get all learning paths
 export const getLearningPaths = async () => {
@@ -46,11 +46,26 @@ export const getPathNodes = async (pathId: string): Promise<PathNode[]> => {
       .order('sequence_number', { ascending: true });
       
     if (error) throw error;
-    return data || [];
+    
+    // Transform node_type to ensure it's a valid NodeType
+    const nodes: PathNode[] = data.map(node => ({
+      ...node,
+      node_type: validateNodeType(node.node_type)
+    }));
+    
+    return nodes;
   } catch (error) {
     console.error(`Error fetching nodes for path ${pathId}:`, error);
     return [];
   }
+};
+
+// Helper function to validate NodeType
+const validateNodeType = (nodeType: string): NodeType => {
+  const validTypes: NodeType[] = ["problem", "tutorial", "quiz", "project"];
+  return validTypes.includes(nodeType as NodeType) 
+    ? nodeType as NodeType 
+    : "problem"; // Default to problem if invalid
 };
 
 // Get a specific node by ID
@@ -63,7 +78,16 @@ export const getNodeById = async (nodeId: string): Promise<PathNode | null> => {
       .single();
       
     if (error) throw error;
-    return data;
+    
+    if (data) {
+      // Transform node_type to ensure it's a valid NodeType
+      return {
+        ...data,
+        node_type: validateNodeType(data.node_type)
+      };
+    }
+    
+    return null;
   } catch (error) {
     console.error(`Error fetching node ${nodeId}:`, error);
     return null;
@@ -154,12 +178,7 @@ const updateUserPathProgress = async (userId: string, nodeId: string): Promise<v
         
       // If completed, increment total paths completed in user profile
       if (isCompleted) {
-        await supabase
-          .from('user_profiles')
-          .update({
-            total_paths_completed: supabase.rpc('increment', { x: 1 })
-          })
-          .eq('id', userId);
+        await incrementField('user_profiles', 'total_paths_completed', 1, 'id', userId);
       }
     }
   } catch (error) {
