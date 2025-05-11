@@ -1,7 +1,6 @@
-
 import { Problem } from './types';
 
-export const mediumProblems: Problem[] = [
+export const mediumProblems = [
   {
     id: "count_elements",
     title: "Count Elements",
@@ -196,4 +195,4 @@ export const mediumProblems: Problem[] = [
     solution: "def product_digits(n):\n    # Convert the number to string\n    n_str = str(n)\n    \n    # Initialize product to 1\n    product = 1\n    \n    # Iterate through each character in the string\n    for digit in n_str:\n        # Convert the character back to integer and multiply with product\n        product = product * int(digit)\n    \n    # Return the final product\n    return product",
     explanation: "This solution calculates the product of all digits in a number using these steps:\n\n1. First, we convert the input number to a string using the `str()` function to be able to access each digit.\n2. We initialize a variable `product` to 1 (the multiplicative identity) to keep track of the running product.\n3. We then iterate through each character in the string representation of the number.\n4. For each character, we convert it back to an integer using the `int()` function and multiply it with our running product.\n5. Finally, we return the calculated product.\n\nNote that if any of the digits is 0, the entire product will be 0, as shown in the second example. This is an important edge case to consider.\n\nThis problem is similar to the \"Sum of All Digits\" problem but uses multiplication instead of addition. It demonstrates type conversion and accumulation patterns in Python."
   }
-];
+] as Problem[];

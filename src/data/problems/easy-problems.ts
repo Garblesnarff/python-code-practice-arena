@@ -1,7 +1,6 @@
-
 import { Problem } from './types';
 
-export const easyProblems: Problem[] = [
+export const easyProblems = [
   {
     id: "sum_positives",
     title: "Sum of Positive Numbers",
@@ -104,4 +103,4 @@ export const easyProblems: Problem[] = [
     solution: "def is_palindrome(s):\n    # Remove non-alphanumeric characters and convert to lowercase\n    clean_s = ''\n    for char in s:\n        if char.isalnum():\n            clean_s = clean_s + char.lower()\n    \n    # Check if the cleaned string reads the same forwards and backwards\n    # Method 1: Compare the string with its reverse\n    return clean_s == clean_s[::-1]",
     explanation: "This solution checks if a string is a palindrome in two main steps:\n\n1. First, we clean the string by:\n   - Removing all non-alphanumeric characters (like spaces, punctuation)\n   - Converting all letters to lowercase\n   - We do this by iterating through each character and only keeping the ones that are letters or numbers using `isalnum()`\n\n2. Then, we check if the cleaned string is a palindrome by:\n   - Comparing the string with its reverse using string slicing `clean_s[::-1]`\n   - If they're the same, the string is a palindrome\n\nAlternatively, we could have done the palindrome check by comparing characters from both ends and moving inward, but this approach is simpler in Python."
   }
-];
+] as Problem[];

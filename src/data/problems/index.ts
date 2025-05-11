@@ -1,17 +1,17 @@
 
 import { Problem, normalizeProblem } from './types';
-import { easyProblems } from './easy-problems';
-import { mediumProblems } from './medium-problems';
-import { hardProblems } from './hard-problems';
-import { course1Problems } from './course-1-problems';
-import { course2Problems } from './course-2-problems';
+import { easyProblems as rawEasyProblems } from './easy-problems';
+import { mediumProblems as rawMediumProblems } from './medium-problems';
+import { hardProblems as rawHardProblems } from './hard-problems';
+import { course1Problems as rawCourse1Problems } from './course-1-problems';
+import { course2Problems as rawCourse2Problems } from './course-2-problems';
 
 // Ensure all problems are normalized before exporting
-const normalizedEasyProblems = easyProblems.map(normalizeProblem);
-const normalizedMediumProblems = mediumProblems.map(normalizeProblem);
-const normalizedHardProblems = hardProblems.map(normalizeProblem);
-const normalizedCourse1Problems = course1Problems.map(normalizeProblem);
-const normalizedCourse2Problems = course2Problems.map(normalizeProblem);
+const normalizedEasyProblems = rawEasyProblems.map(normalizeProblem);
+const normalizedMediumProblems = rawMediumProblems.map(normalizeProblem);
+const normalizedHardProblems = rawHardProblems.map(normalizeProblem);
+const normalizedCourse1Problems = rawCourse1Problems.map(normalizeProblem);
+const normalizedCourse2Problems = rawCourse2Problems.map(normalizeProblem);
 
 // We export all problems here
 export const problems: Problem[] = [

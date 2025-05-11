@@ -1,102 +1,42 @@
 
+import { Course, Topic, CourseProgress } from './course';
+
 export interface UserProfile {
   id: string;
-  username: string;
-  level: number;
+  user_id: string;
+  display_name: string;
+  avatar_url?: string;
   xp: number;
-  xp_to_next_level: number;
-  streak_days: number;
-  last_active_date: string | null;
+  level: number;
   created_at: string;
   updated_at: string;
 }
+
+export interface User {
+  id: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  profile?: UserProfile;
+}
+
+// Re-export course related types
+export type { Course, Topic, CourseProgress };
 
 export interface CompletedProblem {
   id: string;
   user_id: string;
   problem_id: string;
   difficulty: string;
-  xp_earned: number;
   completed_at: string;
-  course_id?: string;
-  topic_id?: string;
-  completion_time_seconds?: number;
-  attempt_count?: number;
+  xp_gained: number;
 }
 
-export interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string | null;
-  category: string;
-  xp_reward: number;
-}
-
-export interface UserAchievement {
+export interface XPHistory {
   id: string;
   user_id: string;
-  achievement_id: string;
-  unlocked_at: string;
-  achievement?: Achievement;
-}
-
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  icon?: string;
-  sequence_number: number;
-  prerequisite_course_ids?: string[];
-  learning_objectives?: string[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Topic {
-  id: string;
-  title: string;
+  amount: number;
+  source: string;
   description?: string;
-  course_id: string;
-  sequence_number: number;
   created_at: string;
-  updated_at: string;
-}
-
-export interface CourseProgress {
-  id: string;
-  user_id: string;
-  course_id: string;
-  last_accessed_timestamp: string;
-  problems_completed: number;
-  total_problems: number;
-  is_completed: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export type NodeType = "Problem" | "Concept" | "Quiz" | "Project";
-
-export interface PathNode {
-  id: string;
-  path_id: string;
-  prerequisite_nodes: string[];
-  sequence_number: number;
-  xp_reward: number;
-  created_at: string;
-  updated_at: string;
-  node_type: NodeType;
-  content_id: string | null;
-  title: string;
-  description: string | null;
-}
-
-export interface UserPathNodeProgress {
-  id: string;
-  user_id: string;
-  node_id: string;
-  completed_at: string;
-  attempts: number;
-  node?: PathNode;
 }

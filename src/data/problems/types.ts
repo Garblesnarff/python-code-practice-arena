@@ -17,8 +17,8 @@ export interface Problem {
   title: string;
   difficulty: string;
   description: string;
-  initial_code: string;
-  solution_code: string;
+  initial_code?: string;
+  solution_code?: string;
   test_cases: TestCase[];
   category?: string;
   subcategory?: string;

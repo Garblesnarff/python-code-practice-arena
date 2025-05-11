@@ -16,7 +16,7 @@ import XPNotificationManager from '@/components/notifications/XPNotificationMana
 
 interface ProblemPageLayoutProps {
   problems: Problem[];
-  difficultyLevel: 'easy' | 'medium' | 'hard';
+  difficultyLevel: 'easy' | 'medium' | 'hard' | 'fundamental' | 'course-1' | 'course-2';
   basePath: string;
   title: string;
 }

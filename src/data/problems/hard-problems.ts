@@ -1,7 +1,6 @@
-
 import { Problem } from './types';
 
-export const hardProblems: Problem[] = [
+export const hardProblems = [
   {
     id: "binary_search",
     title: "Binary Search",
@@ -61,4 +60,4 @@ export const hardProblems: Problem[] = [
     solution: "class LRUCache:\n    def __init__(self, capacity):\n        self.capacity = capacity\n        self.cache = {}  # key -> (value, timestamp)\n        self.timestamp = 0\n    \n    def get(self, key):\n        if key not in self.cache:\n            return -1\n        \n        # Update timestamp to mark as recently used\n        value = self.cache[key][0]\n        self.cache[key] = (value, self.timestamp)\n        self.timestamp += 1\n        return value\n    \n    def put(self, key, value):\n        # If key already exists, just update its value and timestamp\n        if key in self.cache:\n            self.cache[key] = (value, self.timestamp)\n            self.timestamp += 1\n            return\n        \n        # If cache is full, remove least recently used item\n        if len(self.cache) >= self.capacity:\n            # Find key with lowest timestamp (least recently used)\n            lru_key = min(self.cache, key=lambda k: self.cache[k][1])\n            self.cache.pop(lru_key)\n        \n        # Add new key-value pair with current timestamp\n        self.cache[key] = (value, self.timestamp)\n        self.timestamp += 1",
     explanation: "This solution implements an LRU cache using a dictionary and timestamps:\n\n1. We use a dictionary (cache) to store key-value pairs along with timestamps.\n2. Each time an item is accessed or inserted, we update its timestamp.\n3. When the cache reaches capacity and we need to insert a new item, we find and remove the item with the oldest timestamp (least recently used).\n\nIn a real-world implementation, you might use a more efficient data structure like an OrderedDict in Python or a combination of a HashMap and a doubly-linked list, which would provide O(1) time complexity for all operations. Our implementation using timestamps is O(n) for the eviction operation but easier to understand.\n\nThe LRU cache is useful in many applications where you want to keep the most recently accessed items in memory while discarding those that haven't been used in a while."
   }
-];
+] as Problem[];
