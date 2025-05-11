@@ -12,6 +12,7 @@ import XPNotificationManager from '@/components/notifications/XPNotificationMana
 import { usePyodide } from '@/hooks/usePyodide';
 import { useProblemData } from '@/hooks/useProblemData';
 import { useProblemExecution } from '@/hooks/useProblemExecution';
+import { Problem } from '@/data/problems/types';
 
 const ProblemPage = () => {
   const { courseId, topicId, problemId } = useParams<{ 
@@ -43,7 +44,7 @@ const ProblemPage = () => {
     handleNotificationClose,
     handleLevelUpNotificationClose
   } = useProblemExecution({ 
-    problem: problem || {}, 
+    problem: problem as Problem, 
     difficulty: topic?.title || 'medium',
     courseId,
     topicId

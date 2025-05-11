@@ -33,9 +33,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
       
       if (error) throw error;
-      setProfile(data);
       
-      return data;
+      // Transform data to match UserProfile interface
+      const userProfile: UserProfile = {
+        id: data.id,
+        user_id: data.id, // Using id as user_id
+        display_name: data.username || '', // Use username as display_name
+        username: data.username,
+        avatar_url: data.avatar_url,
+        xp: data.xp,
+        level: data.level,
+        xp_to_next_level: data.xp_to_next_level,
+        streak_days: data.streak_days,
+        last_active_date: data.last_active_date,
+        daily_challenge_streak: data.daily_challenge_streak,
+        best_challenge_streak: data.best_challenge_streak,
+        last_daily_challenge_date: data.last_daily_challenge_date,
+        total_paths_completed: data.total_paths_completed,
+        total_badges_earned: data.total_badges_earned,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
+      
+      setProfile(userProfile);
+      return userProfile;
     } catch (error) {
       console.error('Error loading user profile:', error);
       return null;

@@ -20,7 +20,11 @@ const CompletedProblems: React.FC<CompletedProblemsProps> = ({ completedProblems
   }, {} as Record<string, CompletedProblem[]>);
 
   // Calculate total XP earned from problems
-  const totalProblemXP = completedProblems.reduce((sum, problem) => sum + problem.xp_earned, 0);
+  const totalProblemXP = completedProblems.reduce((sum, problem) => {
+    // Use xp_gained if available, fall back to xp_earned
+    const xpValue = problem.xp_gained !== undefined ? problem.xp_gained : (problem.xp_earned || 0);
+    return sum + xpValue;
+  }, 0);
 
   return (
     <Card>
@@ -47,7 +51,7 @@ const CompletedProblems: React.FC<CompletedProblemsProps> = ({ completedProblems
                       key={problem.id} 
                       className="text-sm bg-white dark:bg-gray-700 p-2 rounded border"
                     >
-                      {problem.problem_id} (+{problem.xp_earned} XP)
+                      {problem.problem_id} (+{problem.xp_gained ?? problem.xp_earned ?? 0} XP)
                     </div>
                   ))}
                 </div>

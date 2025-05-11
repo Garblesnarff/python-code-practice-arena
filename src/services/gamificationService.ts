@@ -98,7 +98,23 @@ export const getCompletedProblems = async (userId: string): Promise<CompletedPro
       .eq('user_id', userId);
       
     if (error) throw error;
-    return data || [];
+    
+    // Map the database fields to our CompletedProblem interface
+    const completedProblems: CompletedProblem[] = data.map(item => ({
+      id: item.id,
+      user_id: item.user_id,
+      problem_id: item.problem_id,
+      difficulty: item.difficulty,
+      completed_at: item.completed_at,
+      xp_gained: item.xp_earned, // Map xp_earned to xp_gained
+      xp_earned: item.xp_earned,
+      course_id: item.course_id,
+      topic_id: item.topic_id,
+      completion_time_seconds: item.completion_time_seconds,
+      attempt_count: item.attempt_count
+    }));
+    
+    return completedProblems;
   } catch (error) {
     console.error('Error fetching completed problems:', error);
     return [];
