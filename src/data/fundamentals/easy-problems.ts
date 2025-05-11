@@ -1,7 +1,6 @@
-
 import { Problem } from '../problems';
 
-export const easyFundamentalProblems: Problem[] = [
+export const easyFundamentalProblems = [
   {
     id: "hello_world",
     title: "Hello World",
@@ -259,4 +258,4 @@ export const easyFundamentalProblems: Problem[] = [
     solution: "def sum_digits(n):\n    # Convert the number to string\n    n_str = str(n)\n    \n    # Initialize sum\n    total = 0\n    \n    # Iterate through each character in the string\n    for digit in n_str:\n        # Convert the character back to integer and add to total\n        total = total + int(digit)\n    \n    return total",
     explanation: "This solution calculates the sum of all digits in a number using these steps:\n\n1. First, we convert the input number to a string using the `str()` function to be able to access each digit.\n2. We initialize a variable `total` to 0 to keep track of the running sum.\n3. We then iterate through each character in the string representation of the number.\n4. For each character, we convert it back to an integer using the `int()` function and add it to our running total.\n5. Finally, we return the calculated total.\n\nThis approach showcases the common pattern of converting between different data types to solve a problem more easily. In Python, converting numbers to strings allows us to easily process each digit separately."
   }
-];
+] as Problem[];

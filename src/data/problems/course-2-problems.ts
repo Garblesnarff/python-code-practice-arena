@@ -1,10 +1,9 @@
-
 import { Problem } from './types';
 
 // Course 2: Learning Simple Data Structures in Python
 
 // Problem Set A: Lists
-export const listProblems: Problem[] = [
+export const listProblems = [
   {
     id: 'c2-lists-basics',
     title: 'List Basics',
@@ -253,10 +252,10 @@ export const listProblems: Problem[] = [
     course_id: 'course-2',
     topic_id: 'topic-lists',
   }
-];
+] as Problem[];
 
 // Problem Set B: Dictionaries
-export const dictionaryProblems: Problem[] = [
+export const dictionaryProblems = [
   {
     id: 'c2-dicts-basics',
     title: 'Dictionary Basics',
@@ -478,10 +477,10 @@ export const dictionaryProblems: Problem[] = [
     course_id: 'course-2',
     topic_id: 'topic-dictionaries',
   }
-];
+] as Problem[];
 
 // Problem Set C: Tuples and Sets
-export const tuplesAndSetsProblems: Problem[] = [
+export const tuplesAndSetsProblems = [
   {
     id: 'c2-tuples-basics',
     title: 'Tuple Basics',
@@ -713,11 +712,11 @@ export const tuplesAndSetsProblems: Problem[] = [
     course_id: 'course-2',
     topic_id: 'topic-tuples-sets',
   }
-];
+] as Problem[];
 
 // Combine all Course 2 problems
-export const course2Problems: Problem[] = [
+export const course2Problems = [
   ...listProblems,
   ...dictionaryProblems,
   ...tuplesAndSetsProblems
-];
+] as Problem[];
