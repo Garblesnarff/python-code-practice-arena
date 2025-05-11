@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { hardProblems } from '@/data/problems/hard-problems';
+import { hardProblems } from '@/data/problems';
 import ProblemPageLayout from '@/components/problems/ProblemPageLayout';
 
 const HardProblems: React.FC = () => {

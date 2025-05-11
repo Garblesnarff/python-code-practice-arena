@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { easyProblems } from '@/data/problems/easy-problems';
+import { easyProblems } from '@/data/problems';
 import ProblemPageLayout from '@/components/problems/ProblemPageLayout';
 
 const EasyProblems: React.FC = () => {

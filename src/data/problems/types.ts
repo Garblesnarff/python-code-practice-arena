@@ -37,24 +37,30 @@ export interface Problem {
 }
 
 // Helper function to ensure compatibility between initial_code and starter_code
-export const normalizeProblem = (problem: Problem): Problem => {
+export const normalizeProblem = (problem: any): Problem => {
   // Create a normalized copy of the problem
   const normalized: Problem = { ...problem };
 
   // Handle starter_code <-> initial_code mapping
   if (problem.starter_code && !problem.initial_code) {
     normalized.initial_code = problem.starter_code;
-  }
-  if (problem.initial_code && !problem.starter_code) {
+  } else if (problem.initial_code && !problem.starter_code) {
     normalized.starter_code = problem.initial_code;
+  } else if (!problem.starter_code && !problem.initial_code) {
+    // If neither exists, set both to empty string to avoid errors
+    normalized.initial_code = "";
+    normalized.starter_code = "";
   }
 
   // Handle solution <-> solution_code mapping
   if (problem.solution && !problem.solution_code) {
     normalized.solution_code = problem.solution;
-  }
-  if (problem.solution_code && !problem.solution) {
+  } else if (problem.solution_code && !problem.solution) {
     normalized.solution = problem.solution_code;
+  } else if (!problem.solution && !problem.solution_code) {
+    // If neither exists, set both to empty string to avoid errors
+    normalized.solution_code = "";
+    normalized.solution = "";
   }
 
   return normalized;

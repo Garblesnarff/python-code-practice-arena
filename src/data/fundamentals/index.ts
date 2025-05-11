@@ -1,7 +1,11 @@
 
-import { easyFundamentalProblems } from './easy-problems';
+import { Problem, normalizeProblem } from '../problems/types';
+import { easyFundamentalProblems as rawEasyFundamentalProblems } from './easy-problems';
 
-// We export all fundamental problems here
-export const fundamentalProblems = [
+// Normalize all problems
+export const easyFundamentalProblems: Problem[] = rawEasyFundamentalProblems.map(normalizeProblem);
+
+// We export all fundamentals problems here
+export const fundamentalProblems: Problem[] = [
   ...easyFundamentalProblems,
 ];

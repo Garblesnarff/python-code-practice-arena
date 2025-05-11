@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { mediumProblems } from '@/data/problems/medium-problems';
+import { mediumProblems } from '@/data/problems';
 import ProblemPageLayout from '@/components/problems/ProblemPageLayout';
 
 const MediumProblems: React.FC = () => {
