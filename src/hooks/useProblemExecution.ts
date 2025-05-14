@@ -6,7 +6,6 @@ import { completeProblem } from '@/services/gamificationService';
 import { Problem, normalizeProblem } from '@/data/problems/types';
 import { useProfileData } from '@/hooks/useProfileData';
 import { updateCourseProgressAfterProblemCompletion } from '@/services/courseService';
-
 import { usePyodide } from './usePyodide';
 import { useNotifications } from './useNotifications';
 import { useCompletedProblems } from './useCompletedProblems';
@@ -19,8 +18,24 @@ interface UseProblemExecutionProps {
   topicId?: string;
 }
 
+// Default stub problem to satisfy useCodeExecution
+const defaultProblemStub: Problem = {
+  id: '',
+  title: '',
+  prompt: '',
+  initial_code: '',
+  starter_code: '',
+  test_cases: [],
+  examples: [],
+  concept: '',
+  constraints: '',
+  solution: '',
+  difficulty: 1,
+  estimated_minutes: 0,
+};
+
 export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: UseProblemExecutionProps) => {
-  const normalizedProblem = normalizeProblem(problem);
+  const normalizedProblem = normalizeProblem(problem) || defaultProblemStub;
   const { isPyodideLoading } = usePyodide();
   const { toast } = useToast();
   const { user, profile } = useAuth();
@@ -40,8 +55,24 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
     isProblemCompleted
   } = useCompletedProblems();
 
-  // If no normalized problem, return safe-default values (important for SSR or loading)
-  if (!normalizedProblem) {
+  // Always call useCodeExecution with a normalized problem (never null)
+  const {
+    code,
+    testResults,
+    isExecuting,
+    handleCodeChange,
+    executeCode,
+    handleClearCode,
+    resetCode
+  } = useCodeExecution(normalizedProblem);
+
+  // Reset code when problem changes
+  useEffect(() => {
+    resetCode();
+  }, [normalizedProblem.id]);
+
+  // If normalizedProblem is a stub (no real id), treat as not ready:
+  if (!problem) {
     return {
       code: '',
       testResults: null,
@@ -58,21 +89,6 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
       handleLevelUpNotificationClose
     };
   }
-
-  const {
-    code,
-    testResults,
-    isExecuting,
-    handleCodeChange,
-    executeCode,
-    handleClearCode,
-    resetCode
-  } = useCodeExecution(normalizedProblem);
-
-  // Reset code when problem changes
-  useEffect(() => {
-    resetCode();
-  }, [normalizedProblem.id]);
 
   const handleRunTests = async () => {
     const results = await executeCode(normalizedProblem.test_cases);
