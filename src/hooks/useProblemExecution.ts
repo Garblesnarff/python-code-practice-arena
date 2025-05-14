@@ -13,7 +13,7 @@ import { useCompletedProblems } from './useCompletedProblems';
 import { useCodeExecution } from './useCodeExecution';
 
 interface UseProblemExecutionProps {
-  problem: Problem;
+  problem: Problem | null; // Accept null
   difficulty: string;
   courseId?: string;
   topicId?: string;
@@ -25,21 +25,40 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
   const { toast } = useToast();
   const { user, profile } = useAuth();
   const { refreshAllProfileData } = useProfileData();
-  
-  const { 
-    xpNotification, 
+
+  const {
+    xpNotification,
     levelUpNotification,
     showXPNotification,
     handleNotificationClose,
     handleLevelUpNotificationClose
   } = useNotifications();
-  
+
   const {
     completedProblems,
     refreshCompletedProblems,
     isProblemCompleted
   } = useCompletedProblems();
-  
+
+  // If no normalized problem, return safe-default values (important for SSR or loading)
+  if (!normalizedProblem) {
+    return {
+      code: '',
+      testResults: null,
+      isPyodideLoading,
+      isExecuting: false,
+      xpNotification,
+      levelUpNotification,
+      completedProblems: [],
+      isProblemCompleted: () => false,
+      handleCodeChange: () => {},
+      handleRunTests: () => {},
+      handleClearCode: () => {},
+      handleNotificationClose,
+      handleLevelUpNotificationClose
+    };
+  }
+
   const {
     code,
     testResults,
@@ -57,16 +76,16 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
 
   const handleRunTests = async () => {
     const results = await executeCode(normalizedProblem.test_cases);
-    
+
     if (!results) return;
-    
+
     // Check if all tests passed and award XP
     if (results.summary.passed === results.summary.total && user) {
       // Check if problem already completed
       const isAlreadyCompleted = completedProblems.some(
         p => p.problem_id === normalizedProblem.id
       );
-      
+
       if (!isAlreadyCompleted) {
         const prevLevel = profile?.level || 1;
         const { success, xpGained } = await completeProblem(
@@ -76,22 +95,22 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
           courseId,
           topicId
         );
-        
+
         if (success && xpGained > 0) {
           // Refresh profile data to update XP and level
           const updatedProfile = await refreshAllProfileData();
-          
+
           // Show XP notification
           showXPNotification(`+${xpGained} XP gained!`);
-          
+
           // Refresh completed problems
           await refreshCompletedProblems();
-          
+
           // Update course progress if courseId provided
           if (courseId) {
             await updateCourseProgressAfterProblemCompletion(user.id, courseId, true);
           }
-          
+
           // Check for level up
           if (updatedProfile && updatedProfile.level > prevLevel) {
             setTimeout(() => {
@@ -100,7 +119,7 @@ export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: 
           }
         }
       }
-      
+
       toast({
         title: 'Success!',
         description: `All ${results.summary.total} tests passed! 🎉`,
