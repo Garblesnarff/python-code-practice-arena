@@ -22,7 +22,7 @@ interface UseProblemExecutionProps {
 const defaultProblemStub: Problem = {
   id: '',
   title: '',
-  prompt: '',
+  // prompt: '', // REMOVED because not in the Problem type
   initial_code: '',
   starter_code: '',
   test_cases: [],
