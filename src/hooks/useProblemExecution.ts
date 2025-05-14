@@ -26,8 +26,7 @@ const defaultProblemStub: Problem = {
   test_cases: [],
   examples: [],
   solution: '',
-  difficulty: "easy",
-  estimated_minutes: 0,
+  difficulty: "easy"
 };
 
 export const useProblemExecution = ({ problem, difficulty, courseId, topicId }: UseProblemExecutionProps) => {
