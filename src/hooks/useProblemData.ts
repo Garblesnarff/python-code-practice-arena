@@ -25,6 +25,7 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
   
   useEffect(() => {
     if (!user) {
+      console.log("[useProblemData] No user, redirecting to /auth");
       toast({
         title: "Authentication Required",
         description: "Please log in to access course content.",
@@ -33,15 +34,21 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
       navigate('/auth');
       return;
     }
+
+    console.log("[useProblemData] LOADING", { courseId, topicId, problemId });
     
     const loadData = async () => {
       setLoading(true);
       try {
-        if (!courseId || !topicId || !problemId) return;
+        if (!courseId || !topicId || !problemId) {
+          console.log("[useProblemData] Missing required IDs", { courseId, topicId, problemId });
+          return;
+        }
         
         // Load course data
         const courseData = await getCourseById(courseId);
         if (!courseData) {
+          console.log(`[useProblemData] Course not found for id=${courseId}`);
           toast({
             title: "Course Not Found",
             description: "The requested course could not be found.",
@@ -55,6 +62,7 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
         // Load topic data
         const topicData = await getTopicById(topicId);
         if (!topicData) {
+          console.log(`[useProblemData] Topic not found for id=${topicId}`);
           toast({
             title: "Topic Not Found",
             description: "The requested topic could not be found.",
@@ -68,6 +76,7 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
         // Load problem data
         const problemData = await getProblemById(problemId);
         if (!problemData) {
+          console.log(`[useProblemData] Problem not found for id=${problemId}`);
           toast({
             title: "Problem Not Found",
             description: "The requested problem could not be found.",
@@ -77,6 +86,10 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
           return;
         }
         setProblem(problemData);
+
+        // Log loaded data
+        console.log("[useProblemData] Loaded:", { courseData, topicData, problemData });
+
       } catch (error) {
         console.error('Error loading problem data:', error);
         toast({
@@ -99,3 +112,4 @@ export const useProblemData = ({ courseId, topicId, problemId }: UseProblemDataP
     loading,
   };
 };
+
