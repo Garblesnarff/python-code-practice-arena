@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,12 +21,10 @@ interface UseProblemExecutionProps {
 const defaultProblemStub: Problem = {
   id: '',
   title: '',
-  // prompt: '', // REMOVED because not in the Problem type
   initial_code: '',
   starter_code: '',
   test_cases: [],
   examples: [],
-  concept: '',
   constraints: '',
   solution: '',
   difficulty: "easy",
