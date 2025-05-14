@@ -25,7 +25,6 @@ const defaultProblemStub: Problem = {
   starter_code: '',
   test_cases: [],
   examples: [],
-  constraints: '',
   solution: '',
   difficulty: "easy",
   estimated_minutes: 0,
