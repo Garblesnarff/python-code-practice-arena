@@ -1,14 +1,19 @@
 // Import the Problem interface
 import { Problem } from './types';
 
-// Array of problems for Course 1
+// UUIDs for real database entities
+const COURSE1_UUID = "32688567-17c4-4023-b54d-e033c8e89865";
+const TOPIC_BASICS_UUID = "436c5453-8ac5-4e5c-beaa-1439d4c35c5c";
+// Use your real topic-conditionals UUID below!
+const TOPIC_CONDITIONALS_UUID = "PUT-YOUR-TOPIC-CONDITIONALS-UUID-HERE";
+
 export const course1Problems: Problem[] = [
   {
     id: 'variables-assignment',
     title: 'Variables and Assignment',
     difficulty: 'Easy',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
+    course_id: COURSE1_UUID,
+    topic_id: TOPIC_BASICS_UUID,
     description: `
     # Variables and Assignment
     
@@ -56,8 +61,8 @@ export const course1Problems: Problem[] = [
     id: 'basic-math-operations',
     title: 'Basic Math Operations',
     difficulty: 'Easy',
-    course_id: 'course-1',
-    topic_id: 'topic-basics',
+    course_id: COURSE1_UUID,
+    topic_id: TOPIC_BASICS_UUID,
     description: `
     # Basic Math Operations
     
@@ -142,8 +147,8 @@ def modulus(a, b):
     id: 'conditional-statements',
     title: 'Conditional Statements',
     difficulty: 'Medium',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
+    course_id: COURSE1_UUID,
+    topic_id: TOPIC_CONDITIONALS_UUID,
     description: `
     # Conditional Statements
     
@@ -191,8 +196,8 @@ def modulus(a, b):
     id: 'simple-calculator',
     title: 'Simple Calculator',
     difficulty: 'Medium',
-    course_id: 'course-1',
-    topic_id: 'topic-conditionals',
+    course_id: COURSE1_UUID,
+    topic_id: TOPIC_CONDITIONALS_UUID,
     description: `
     # Simple Calculator
     
