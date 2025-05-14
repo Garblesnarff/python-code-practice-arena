@@ -30,7 +30,7 @@ const defaultProblemStub: Problem = {
   concept: '',
   constraints: '',
   solution: '',
-  difficulty: 1,
+  difficulty: "easy",
   estimated_minutes: 0,
 };
 
