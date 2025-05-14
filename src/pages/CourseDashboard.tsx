@@ -17,7 +17,7 @@ import CourseNotFound from '@/components/courses/CourseNotFound';
 
 const CourseDashboard = () => {
   const { courseId } = useParams<{ courseId: string }>();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth(); // <-- If your AuthContext exposes loading
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -27,7 +27,8 @@ const CourseDashboard = () => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    if (!user) {
+    // Only redirect if auth is NOT loading and there is truly no user
+    if (!authLoading && !user) {
       toast({
         title: "Authentication Required",
         description: "Please log in to access course content.",
@@ -77,10 +78,13 @@ const CourseDashboard = () => {
       }
     };
     
-    loadCourseData();
-  }, [courseId, user, toast, navigate]);
+    // Only load data if auth is not loading and user exists
+    if (!authLoading && user) {
+      loadCourseData();
+    }
+  }, [courseId, user, toast, navigate, authLoading]);
   
-  if (loading) {
+  if (authLoading || loading) {
     return <LoadingOverlay />;
   }
   
@@ -120,3 +124,4 @@ const CourseDashboard = () => {
 };
 
 export default CourseDashboard;
+
