@@ -15,38 +15,69 @@ import { useTopicData } from '@/hooks/useTopicData';
 
 const TopicDashboard = () => {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
-  const { user } = useAuth();
+-  const { user } = useAuth();
++  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  // Redirect if not authenticated
-  React.useEffect(() => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to access course content.",
-        variant: "default"
-      });
-      navigate('/auth');
-    }
-  }, [user, toast, navigate]);
+
+-  // Redirect if not authenticated
+-  React.useEffect(() => {
+-    if (!user) {
+-      toast({
+-        title: "Authentication Required",
+-        description: "Please log in to access course content.",
+-        variant: "default"
+-      });
+-      navigate('/auth');
+-    }
+-  }, [user, toast, navigate]);
++  // Redirect if not authenticated; wait for authLoading to be false first
++  React.useEffect(() => {
++    if (!authLoading && !user) {
++      toast({
++        title: "Authentication Required",
++        description: "Please log in to access course content.",
++        variant: "default"
++      });
++      navigate('/auth');
++    }
++  }, [authLoading, user, toast, navigate]);
   
   // Load topic data
-  const {
-    course,
-    topic,
-    problems,
-    completedProblemIds,
-    loading,
-    problemsCompleted,
-    totalProblems,
-    progressPercentage,
-    firstProblemId
-  } = useTopicData(courseId, topicId, user?.id);
+-  const {
+-    course,
+-    topic,
+-    problems,
+-    completedProblemIds,
+-    loading,
+-    problemsCompleted,
+-    totalProblems,
+-    progressPercentage,
+-    firstProblemId
+-  } = useTopicData(courseId, topicId, user?.id);
++  const {
++    course,
++    topic,
++    problems,
++    completedProblemIds,
++    loading,
++    problemsCompleted,
++    totalProblems,
++    progressPercentage,
++    firstProblemId
++  } = useTopicData(
++    courseId,
++    topicId,
++    // Only pass userId AFTER authLoading is done and user exists
++    (!authLoading && user) ? user.id : undefined
++  );
   
-  if (loading) {
-    return <LoadingOverlay />;
-  }
+-  if (loading) {
+-    return <LoadingOverlay />;
+-  }
++  if (authLoading || loading) {
++    return <LoadingOverlay />;
++  }
   
   if (!course || !topic) {
     return <TopicNotFound />;
@@ -98,3 +129,4 @@ const TopicDashboard = () => {
 };
 
 export default TopicDashboard;
+
