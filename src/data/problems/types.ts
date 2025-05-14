@@ -37,7 +37,9 @@ export interface Problem {
 }
 
 // Helper function to ensure compatibility between initial_code and starter_code
-export const normalizeProblem = (problem: any): Problem => {
+export const normalizeProblem = (problem: any): Problem | null => {
+  if (!problem) return null; // <--- Prevent error by returning null early
+
   // Create a normalized copy of the problem
   const normalized: Problem = { ...problem };
 
