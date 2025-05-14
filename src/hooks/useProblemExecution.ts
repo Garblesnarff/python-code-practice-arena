@@ -21,6 +21,7 @@ interface UseProblemExecutionProps {
 const defaultProblemStub: Problem = {
   id: '',
   title: '',
+  description: '', // Added to satisfy Problem type requirements
   initial_code: '',
   starter_code: '',
   test_cases: [],
